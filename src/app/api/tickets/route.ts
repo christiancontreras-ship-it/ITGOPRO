@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     const payload = await verifyJWT(token);
-    if (!payload) {
+    if (!payload || !payload.sub) {
       return NextResponse.json(
         { error: 'Invalid token' },
         { status: 401 }
@@ -33,17 +33,11 @@ export async function GET(request: NextRequest) {
       .from('tickets')
       .select('*', { count: 'exact' });
 
-    // Apply filters
     if (status) query = query.eq('status', status);
     if (priority) query = query.eq('priority', priority);
     if (category) query = query.eq('category', category);
 
-    // Apply role-based filtering
-    const { data: user } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', payload.sub)
-      .single();
+    const { data: user } = await (supabase.from('users') as any).select('role').eq('id', payload.sub as string).single();
 
     if (user?.role === 'client') {
       query = query.eq('client_id', payload.sub);
@@ -51,7 +45,6 @@ export async function GET(request: NextRequest) {
       query = query.or(`specialist_id.eq.${payload.sub},client_id.eq.${payload.sub}`);
     }
 
-    // Pagination
     const offset = (page - 1) * pageSize;
     query = query
       .order('created_at', { ascending: false })
@@ -92,7 +85,7 @@ export async function POST(request: NextRequest) {
     }
 
     const payload = await verifyJWT(token);
-    if (!payload) {
+    if (!payload || !payload.sub) {
       return NextResponse.json(
         { error: 'Invalid token' },
         { status: 401 }
@@ -109,25 +102,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create ticket
-    const { data: ticket, error } = await supabase
-      .from('tickets')
-      .insert({
-        client_id: payload.sub,
-        title,
-        description,
-        category,
-        priority,
-        status: 'new',
-      })
-      .select()
-      .single();
+    const ticketData: any = {
+      client_id: payload.sub,
+      title,
+      description,
+      category,
+      priority,
+      status: 'new',
+    };
+
+    const { data: ticket, error } = await (supabase.from('tickets') as any).insert(ticketData).select().single();
 
     if (error) {
       throw error;
     }
 
-    // Call AI classification
     try {
       await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/ai/classify`, {
         method: 'POST',
@@ -143,22 +132,17 @@ export async function POST(request: NextRequest) {
       console.error('AI classification error:', aiError);
     }
 
-    // Create notification for admins
-    const { data: admins } = await supabase
-      .from('users')
-      .select('id')
-      .eq('role', 'admin');
+    const { data: admins } = await (supabase.from('users') as any).select('id').eq('role', 'admin');
 
-    if (admins) {
-      await supabase.from('notifications').insert(
-        admins.map((admin) => ({
-          user_id: admin.id,
-          type: 'ticket',
-          title: 'Nuevo ticket',
-          description: title,
-          related_id: ticket.id,
-        }))
-      );
+    if (admins && admins.length > 0) {
+      const notificationsData: any = admins.map((admin: any) => ({
+        user_id: admin.id,
+        type: 'ticket',
+        title: 'Nuevo ticket',
+        description: title,
+        related_id: ticket.id,
+      }));
+      await (supabase.from('notifications') as any).insert(notificationsData);
     }
 
     return NextResponse.json(ticket, { status: 201 });
