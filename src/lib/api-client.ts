@@ -21,8 +21,7 @@ apiClient.interceptors.response.use(response => response, error => {
   return Promise.reject(error);
 });
 
-export async function request<T = any>(method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE', url: string, data?: any, config?: AxiosRequestConfig) {
-  try {
+export async function request(method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE', url: string, data?: any, config?: AxiosRequestConfig) {
     const response = await apiClient({ method, url, data, ...config });
     return { success: true, data: response.data || response, error: null, message: 'Success' };
   } catch (error) {
