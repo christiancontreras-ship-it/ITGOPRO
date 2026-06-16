@@ -49,10 +49,14 @@ export const useTicketStore = create<TicketState>((set, get) => ({
   setFilters: (filters) => set({ filters }),
   setPagination: (pagination) => set({ pagination }),
 
-  fetchTickets: async (filters?, page = 1) => {
+  fetchTickets: async (filters, page = 1) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await fetch('/api/tickets', {
+      const url = new URL('/api/tickets', window.location.origin);
+      url.searchParams.append('page', String(page));
+      url.searchParams.append('pageSize', '20');
+
+      const response = await fetch(url.toString(), {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
