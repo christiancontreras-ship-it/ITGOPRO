@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/authStore';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, setError, error, isLoading } = useAuthStore();
+  const { login, error, isLoading } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState('');
