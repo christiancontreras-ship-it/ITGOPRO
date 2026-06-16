@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         action: 'LOGIN_FAILED',
         resource_type: 'user',
         ip_address: clientIp,
-      });
+      } as any);
 
       return NextResponse.json(
         { error: 'Invalid credentials' },
@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       action: 'LOGIN_SUCCESS',
       resource_type: 'user',
       ip_address: clientIp,
-    });
+    } as any);
 
     // Remove sensitive data
     const { password_hash, mfa_secret, ...safeUser } = user;
