@@ -74,10 +74,7 @@ export async function POST(request: NextRequest) {
     const token = await generateJWT(user.id, user.email, user.role);
 
     const updateData: any = { last_login: new Date().toISOString() };
-    await (supabase
-      .from('users') as any
-      .update(updateData)
-      .eq('id', user.id));
+    await (supabase.from('users') as any).update(updateData).eq('id', user.id);
 
     const successAudit: any = {
       user_id: user.id,
