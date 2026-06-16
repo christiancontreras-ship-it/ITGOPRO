@@ -1,22 +1,27 @@
-import { jwtVerify, SignJWT } from 'jose';
+import { jwtVerify, SignJWT, JWTPayload as JoseJWTPayload } from 'jose';
 import CryptoJS from 'crypto-js';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'default-secret-key');
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
-interface JWTPayload {
-  sub: string;
+interface JWTPayload extends JoseJWTPayload {
   email: string;
   role: string;
-  iat: number;
-  exp: number;
 }
 
 // Verify JWT token
 export async function verifyJWT(token: string): Promise<JWTPayload | null> {
   try {
     const verified = await jwtVerify(token, JWT_SECRET);
-    return verified.payload as JWTPayload;
+    const payload = verified.payload as unknown as JWTPayload;
+    
+    // Validate that the payload has required fields
+    if (!payload.email || !payload.role) {
+      console.error('JWT payload missing required fields');
+      return null;
+    }
+    
+    return payload;
   } catch (error) {
     console.error('JWT verification failed:', error);
     return null;
