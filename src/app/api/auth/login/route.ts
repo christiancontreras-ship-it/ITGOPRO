@@ -24,11 +24,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user from database
-    const { data: user, error: userError } = await supabase
+    const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
       .eq('email', email)
-      .single();
+      .single() as any;
+
+    const user = userData as any;
 
     if (userError || !user) {
       return NextResponse.json(
@@ -65,7 +67,7 @@ export async function POST(request: NextRequest) {
     if (user.mfa_enabled) {
       // Create temporary session
       const tempToken = await generateJWT(user.id, user.email, user.role);
-      
+
       return NextResponse.json(
         {
           mfa_required: true,
