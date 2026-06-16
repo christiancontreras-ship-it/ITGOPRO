@@ -68,11 +68,7 @@ export async function POST(request: NextRequest) {
       is_verified: false,
     };
 
-    const { data: newUser, error: insertError } = await (supabase
-      .from('users') as any
-      .insert(userData)
-      .select()
-      .single());
+    const { data: newUser, error: insertError } = await (supabase.from('users') as any).insert(userData).select().single() as any;
 
     if (insertError || !newUser) {
       console.error('Error creating user:', insertError);
