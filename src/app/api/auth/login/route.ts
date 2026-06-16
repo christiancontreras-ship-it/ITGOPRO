@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     // Update last login
     await supabase
       .from('users')
-      .update({ last_login: new Date().toISOString() }as any)
+      .update({ last_login: new Date().toISOString() } as any)
       .eq('id', user.id);
 
     // Log successful login
