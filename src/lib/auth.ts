@@ -60,10 +60,11 @@ export function validateMFACode(secret: string, code: string): boolean {
   const window = parseInt(process.env.MFA_WINDOW_SIZE || '30');
   const now = Math.floor(Date.now() / 1000 / window);
 
-  for (let i = -1; i <= 1; i++) {
+ for (let i = -1; i <= 1; i++) {
     const hmac = CryptoJS.HmacSHA1(secret, (now + i).toString());
-    const offset = parseInt(hmac.charAt(hmac.length - 1), 16) & 0xf;
-    const otp = (parseInt(hmac.substr(offset * 2, 8), 16) & 0x7fffffff) % 1000000;
+    const hmacStr = hmac.toString();
+    const offset = parseInt(hmacStr.charAt(hmacStr.length - 1), 16) & 0xf;
+    const otp = (parseInt(hmacStr.substr(offset * 2, 8), 16) & 0x7fffffff) % 1000000;
 
     if (otp.toString().padStart(6, '0') === code) {
       return true;
