@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     // Verify password (in production, use bcrypt)
     if (hashPassword(password) !== user.password_hash) {
       // Log failed attempt
-      // @ts-ignore-next-line
+      // @ts-ignore
       await supabase.from('audit_logs').insert({
         user_id: user.id,
         action: 'LOGIN_FAILED',
@@ -83,14 +83,14 @@ export async function POST(request: NextRequest) {
     const token = await generateJWT(user.id, user.email, user.role);
 
     // Update last login
-    // @ts-ignore-next-line
+    // @ts-ignore
     await supabase
       .from('users')
       .update({ last_login: new Date().toISOString() })
       .eq('id', user.id);
 
     // Log successful login
-    // @ts-ignore-next-line
+    // @ts-ignore
     await supabase.from('audit_logs').insert({
       user_id: user.id,
       action: 'LOGIN_SUCCESS',
