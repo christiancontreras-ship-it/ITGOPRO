@@ -22,6 +22,7 @@ apiClient.interceptors.response.use(response => response, error => {
 });
 
 export async function request(method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE', url: string, data?: any, config?: AxiosRequestConfig) {
+  try {
     const response = await apiClient({ method, url, data, ...config });
     return { success: true, data: response.data || response, error: null, message: 'Success' };
   } catch (error) {
@@ -30,11 +31,11 @@ export async function request(method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE
   }
 }
 
-export const get = <T = any>(url: string, config?: AxiosRequestConfig) => request<T>('GET', url, undefined, config);
-export const post = <T = any>(url: string, data: any, config?: AxiosRequestConfig) => request<T>('POST', url, data, config);
-export const put = <T = any>(url: string, data: any, config?: AxiosRequestConfig) => request<T>('PUT', url, data, config);
-export const patch = <T = any>(url: string, data: any, config?: AxiosRequestConfig) => request<T>('PATCH', url, data, config);
-export const deleteRequest = <T = any>(url: string, config?: AxiosRequestConfig) => request<T>('DELETE', url, undefined, config);
+export const get = (url: string, config?: AxiosRequestConfig) => request('GET', url, undefined, config);
+export const post = (url: string, data: any, config?: AxiosRequestConfig) => request('POST', url, data, config);
+export const put = (url: string, data: any, config?: AxiosRequestConfig) => request('PUT', url, data, config);
+export const patch = (url: string, data: any, config?: AxiosRequestConfig) => request('PATCH', url, data, config);
+export const deleteRequest = (url: string, config?: AxiosRequestConfig) => request('DELETE', url, undefined, config);
 
 export const api = {
   auth: {
