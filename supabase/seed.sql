@@ -1,0 +1,1 @@
+-- Etapa 0: no se crean datos funcionales de ejemplo.

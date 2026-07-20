@@ -1,0 +1,15 @@
+node_modules/
+node_modules.partial/
+.next/
+out/
+coverage/
+playwright-report/
+test-results/
+.env
+.env.*
+!.env.example
+supabase/.temp/
+supabase/.branches/
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
