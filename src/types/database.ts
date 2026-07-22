@@ -452,6 +452,49 @@ export type Database = {
           },
         ]
       }
+      company_favorite_specialists: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string
+          specialist_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by: string
+          specialist_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          specialist_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'company_favorite_specialists_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'company_favorite_specialists_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'company_favorite_specialists_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       company_invitations: {
         Row: {
           accepted_at: string | null
@@ -1172,6 +1215,299 @@ export type Database = {
         }
         Relationships: []
       }
+      skills: {
+        Row: {
+          category: string
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      specialist_certifications: {
+        Row: {
+          created_at: string
+          credential_id: string | null
+          document_path: string | null
+          expires_at: string | null
+          id: string
+          issued_at: string | null
+          issuer: string
+          name: string
+          rejection_reason: string | null
+          specialist_id: string
+          status: string
+          updated_at: string
+          verification_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          credential_id?: string | null
+          document_path?: string | null
+          expires_at?: string | null
+          id?: string
+          issued_at?: string | null
+          issuer: string
+          name: string
+          rejection_reason?: string | null
+          specialist_id: string
+          status?: string
+          updated_at?: string
+          verification_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          credential_id?: string | null
+          document_path?: string | null
+          expires_at?: string | null
+          id?: string
+          issued_at?: string | null
+          issuer?: string
+          name?: string
+          rejection_reason?: string | null
+          specialist_id?: string
+          status?: string
+          updated_at?: string
+          verification_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'specialist_certifications_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      specialist_profiles: {
+        Row: {
+          approval_status: string
+          availability_status: string
+          avatar_path: string | null
+          average_response_minutes: number | null
+          bio: string
+          completed_services: number
+          created_at: string
+          currency_code: string
+          deleted_at: string | null
+          hourly_rate: number
+          id: string
+          modality: string
+          plan_code: string
+          professional_title: string
+          public_name: string
+          rating_average: number
+          region_id: string | null
+          reviews_count: number
+          sla_compliance_percent: number | null
+          updated_at: string
+          user_id: string
+          years_experience: number
+        }
+        Insert: {
+          approval_status?: string
+          availability_status?: string
+          avatar_path?: string | null
+          average_response_minutes?: number | null
+          bio: string
+          completed_services?: number
+          created_at?: string
+          currency_code?: string
+          deleted_at?: string | null
+          hourly_rate: number
+          id?: string
+          modality?: string
+          plan_code?: string
+          professional_title: string
+          public_name: string
+          rating_average?: number
+          region_id?: string | null
+          reviews_count?: number
+          sla_compliance_percent?: number | null
+          updated_at?: string
+          user_id: string
+          years_experience?: number
+        }
+        Update: {
+          approval_status?: string
+          availability_status?: string
+          avatar_path?: string | null
+          average_response_minutes?: number | null
+          bio?: string
+          completed_services?: number
+          created_at?: string
+          currency_code?: string
+          deleted_at?: string | null
+          hourly_rate?: number
+          id?: string
+          modality?: string
+          plan_code?: string
+          professional_title?: string
+          public_name?: string
+          rating_average?: number
+          region_id?: string | null
+          reviews_count?: number
+          sla_compliance_percent?: number | null
+          updated_at?: string
+          user_id?: string
+          years_experience?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'specialist_profiles_currency_code_fkey'
+            columns: ['currency_code']
+            isOneToOne: false
+            referencedRelation: 'currencies'
+            referencedColumns: ['code']
+          },
+          {
+            foreignKeyName: 'specialist_profiles_region_id_fkey'
+            columns: ['region_id']
+            isOneToOne: false
+            referencedRelation: 'regions'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'specialist_profiles_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      specialist_reviews: {
+        Row: {
+          author_id: string
+          comment: string | null
+          communication_rating: number | null
+          company_id: string
+          created_at: string
+          id: string
+          is_public: boolean
+          rating: number
+          specialist_id: string
+          technical_rating: number | null
+          ticket_id: string
+        }
+        Insert: {
+          author_id: string
+          comment?: string | null
+          communication_rating?: number | null
+          company_id: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          rating: number
+          specialist_id: string
+          technical_rating?: number | null
+          ticket_id: string
+        }
+        Update: {
+          author_id?: string
+          comment?: string | null
+          communication_rating?: number | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          rating?: number
+          specialist_id?: string
+          technical_rating?: number | null
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'specialist_reviews_author_id_fkey'
+            columns: ['author_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'specialist_reviews_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'specialist_reviews_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'specialist_reviews_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: true
+            referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      specialist_skills: {
+        Row: {
+          created_at: string
+          proficiency: string
+          skill_id: string
+          specialist_id: string
+          years_experience: number
+        }
+        Insert: {
+          created_at?: string
+          proficiency: string
+          skill_id: string
+          specialist_id: string
+          years_experience?: number
+        }
+        Update: {
+          created_at?: string
+          proficiency?: string
+          skill_id?: string
+          specialist_id?: string
+          years_experience?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'specialist_skills_skill_id_fkey'
+            columns: ['skill_id']
+            isOneToOne: false
+            referencedRelation: 'skills'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'specialist_skills_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       ticket_categories: {
         Row: {
           code: string
@@ -1303,6 +1639,67 @@ export type Database = {
             columns: ['uploaded_by']
             isOneToOne: false
             referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      ticket_invitations: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          invited_by: string
+          message: string | null
+          responded_at: string | null
+          specialist_id: string
+          status: string
+          ticket_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invited_by: string
+          message?: string | null
+          responded_at?: string | null
+          specialist_id: string
+          status?: string
+          ticket_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          message?: string | null
+          responded_at?: string | null
+          specialist_id?: string
+          status?: string
+          ticket_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ticket_invitations_invited_by_fkey'
+            columns: ['invited_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_invitations_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_invitations_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: false
+            referencedRelation: 'tickets'
             referencedColumns: ['id']
           },
         ]

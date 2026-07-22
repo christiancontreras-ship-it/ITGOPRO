@@ -41,6 +41,12 @@ test('permite registrar, iniciar y cerrar una sesión local', async ({
   ).toBeVisible({ timeout: 15_000 })
   await expect(page.getByText(/^ITG-/)).toBeVisible()
 
+  await page.getByRole('link', { name: 'Especialistas' }).click()
+  await expect(
+    page.getByRole('heading', { name: 'Marketplace TI' }),
+  ).toBeVisible()
+  await expect(page.getByText('No hay especialistas disponibles')).toBeVisible()
+
   await page.getByRole('button', { name: 'Salir' }).click()
   await expect(page).toHaveURL(/\/auth\/login$/)
 })
