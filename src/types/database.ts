@@ -109,6 +109,60 @@ export type Database = {
           },
         ]
       }
+      commissions: {
+        Row: {
+          commission_percent: number
+          created_at: string
+          gross_amount: number
+          id: string
+          payment_id: string
+          platform_amount: number
+          specialist_amount: number
+          specialist_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          commission_percent: number
+          created_at?: string
+          gross_amount: number
+          id?: string
+          payment_id: string
+          platform_amount: number
+          specialist_amount: number
+          specialist_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          commission_percent?: number
+          created_at?: string
+          gross_amount?: number
+          id?: string
+          payment_id?: string
+          platform_amount?: number
+          specialist_amount?: number
+          specialist_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'commissions_payment_id_fkey'
+            columns: ['payment_id']
+            isOneToOne: true
+            referencedRelation: 'payments'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'commissions_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       communes: {
         Row: {
           code: string | null
@@ -845,6 +899,41 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_accounts: {
+        Row: {
+          account_type: string
+          created_at: string
+          currency_code: string
+          id: string
+          owner_id: string | null
+          owner_type: string
+        }
+        Insert: {
+          account_type: string
+          created_at?: string
+          currency_code?: string
+          id?: string
+          owner_id?: string | null
+          owner_type: string
+        }
+        Update: {
+          account_type?: string
+          created_at?: string
+          currency_code?: string
+          id?: string
+          owner_id?: string | null
+          owner_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'financial_accounts_currency_code_fkey'
+            columns: ['currency_code']
+            isOneToOne: false
+            referencedRelation: 'currencies'
+            referencedColumns: ['code']
+          },
+        ]
+      }
       industries: {
         Row: {
           code: string
@@ -883,6 +972,97 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      ledger_entries: {
+        Row: {
+          account_id: string
+          amount: number
+          created_at: string
+          currency_code: string
+          direction: string
+          id: string
+          transaction_id: string
+        }
+        Insert: {
+          account_id: string
+          amount: number
+          created_at?: string
+          currency_code: string
+          direction: string
+          id?: string
+          transaction_id: string
+        }
+        Update: {
+          account_id?: string
+          amount?: number
+          created_at?: string
+          currency_code?: string
+          direction?: string
+          id?: string
+          transaction_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ledger_entries_account_id_fkey'
+            columns: ['account_id']
+            isOneToOne: false
+            referencedRelation: 'financial_accounts'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ledger_entries_currency_code_fkey'
+            columns: ['currency_code']
+            isOneToOne: false
+            referencedRelation: 'currencies'
+            referencedColumns: ['code']
+          },
+          {
+            foreignKeyName: 'ledger_entries_transaction_id_fkey'
+            columns: ['transaction_id']
+            isOneToOne: false
+            referencedRelation: 'ledger_transactions'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      ledger_transactions: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          payment_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description: string
+          id?: string
+          payment_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string
+          id?: string
+          payment_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ledger_transactions_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ledger_transactions_payment_id_fkey'
+            columns: ['payment_id']
+            isOneToOne: true
+            referencedRelation: 'payments'
+            referencedColumns: ['id']
+          },
+        ]
       }
       membership_roles: {
         Row: {
@@ -939,6 +1119,86 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          amount: number
+          authorized_at: string | null
+          captured_at: string | null
+          company_id: string
+          created_at: string
+          created_by: string
+          currency_code: string
+          id: string
+          idempotency_key: string
+          provider: string
+          provider_reference: string | null
+          status: string
+          ticket_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          authorized_at?: string | null
+          captured_at?: string | null
+          company_id: string
+          created_at?: string
+          created_by: string
+          currency_code?: string
+          id?: string
+          idempotency_key: string
+          provider: string
+          provider_reference?: string | null
+          status?: string
+          ticket_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          authorized_at?: string | null
+          captured_at?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          currency_code?: string
+          id?: string
+          idempotency_key?: string
+          provider?: string
+          provider_reference?: string | null
+          status?: string
+          ticket_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'payments_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'payments_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'payments_currency_code_fkey'
+            columns: ['currency_code']
+            isOneToOne: false
+            referencedRelation: 'currencies'
+            referencedColumns: ['code']
+          },
+          {
+            foreignKeyName: 'payments_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: false
+            referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       permissions: {
         Row: {
           action: string
@@ -971,6 +1231,56 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      plans: {
+        Row: {
+          audience: string
+          code: string
+          commission_percent: number
+          created_at: string
+          currency_code: string
+          features: Json
+          id: string
+          is_active: boolean
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          audience: string
+          code: string
+          commission_percent: number
+          created_at?: string
+          currency_code?: string
+          features?: Json
+          id?: string
+          is_active?: boolean
+          name: string
+          price?: number
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          code?: string
+          commission_percent?: number
+          created_at?: string
+          currency_code?: string
+          features?: Json
+          id?: string
+          is_active?: boolean
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'plans_currency_code_fkey'
+            columns: ['currency_code']
+            isOneToOne: false
+            referencedRelation: 'currencies'
+            referencedColumns: ['code']
+          },
+        ]
       }
       platform_settings: {
         Row: {
@@ -2656,6 +2966,15 @@ export type Database = {
     Functions: {
       create_company_with_owner: {
         Args: { legal_name: string; tax_id?: string; trade_name?: string }
+        Returns: string
+      }
+      create_manual_ticket_payment: {
+        Args: {
+          p_amount: number
+          p_commission_percent?: number
+          p_idempotency_key: string
+          p_ticket_id: string
+        }
         Returns: string
       }
       generate_ticket_matches: {
