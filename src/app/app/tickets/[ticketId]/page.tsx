@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { analyzeTicketAction } from './ai-actions'
 import { addTicketCommentAction } from '@/app/app/tickets/actions'
 import { Card } from '@/components/ui/card'
 import { TicketChat } from '@/components/tickets/ticket-chat'
@@ -13,6 +14,7 @@ export default async function TicketDetailPage({
   const { ticketId } = await params
   const ticket = await getTicket(ticketId)
   if (!ticket) notFound()
+  const latestAnalysis = ticket.ticket_ai_analyses[0]
   const category =
     ticket.ticket_categories && !Array.isArray(ticket.ticket_categories)
       ? ticket.ticket_categories.name
@@ -57,6 +59,37 @@ export default async function TicketDetailPage({
           </ol>
         </Card>
       </section>
+      <Card>
+        <div className="dashboard-heading">
+          <div>
+            <p className="eyebrow">Claude</p>
+            <h2>Análisis técnico asistido</h2>
+          </div>
+          <form action={analyzeTicketAction}>
+            <input type="hidden" name="ticketId" value={ticket.id} />
+            <button className="button" type="submit">
+              Analizar ticket
+            </button>
+          </form>
+        </div>
+        {!latestAnalysis ? (
+          <p>Aún no existe un análisis IA.</p>
+        ) : (
+          <div>
+            <p>{latestAnalysis.technical_summary}</p>
+            <dl>
+              <dt>Complejidad</dt>
+              <dd>{latestAnalysis.complexity}</dd>
+              <dt>Horas estimadas</dt>
+              <dd>{latestAnalysis.estimated_hours}</dd>
+              <dt>Costo sugerido</dt>
+              <dd>
+                CLP {latestAnalysis.estimated_cost?.toLocaleString('es-CL')}
+              </dd>
+            </dl>
+          </div>
+        )}
+      </Card>
       <Card>
         <h2>Comentarios</h2>
         {ticket.ticket_comments.map((comment) => (

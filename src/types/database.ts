@@ -1700,6 +1700,84 @@ export type Database = {
           },
         ]
       }
+      ticket_ai_analyses: {
+        Row: {
+          category_code: string | null
+          complexity: string | null
+          created_at: string
+          estimated_cost: number | null
+          estimated_hours: number | null
+          id: string
+          input_tokens: number | null
+          model: string
+          output_tokens: number | null
+          prompt_version: string
+          provider: string
+          recommended_actions: Json
+          requested_by: string
+          risk_flags: Json
+          status: string
+          suggested_priority: string | null
+          technical_summary: string
+          ticket_id: string
+        }
+        Insert: {
+          category_code?: string | null
+          complexity?: string | null
+          created_at?: string
+          estimated_cost?: number | null
+          estimated_hours?: number | null
+          id?: string
+          input_tokens?: number | null
+          model: string
+          output_tokens?: number | null
+          prompt_version: string
+          provider?: string
+          recommended_actions?: Json
+          requested_by: string
+          risk_flags?: Json
+          status?: string
+          suggested_priority?: string | null
+          technical_summary: string
+          ticket_id: string
+        }
+        Update: {
+          category_code?: string | null
+          complexity?: string | null
+          created_at?: string
+          estimated_cost?: number | null
+          estimated_hours?: number | null
+          id?: string
+          input_tokens?: number | null
+          model?: string
+          output_tokens?: number | null
+          prompt_version?: string
+          provider?: string
+          recommended_actions?: Json
+          requested_by?: string
+          risk_flags?: Json
+          status?: string
+          suggested_priority?: string | null
+          technical_summary?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ticket_ai_analyses_requested_by_fkey'
+            columns: ['requested_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_ai_analyses_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: false
+            referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       ticket_application_messages: {
         Row: {
           application_id: string
