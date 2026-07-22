@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+test.setTimeout(60_000)
+
 test('permite registrar, iniciar y cerrar una sesión local', async ({
   page,
 }) => {
@@ -46,6 +48,28 @@ test('permite registrar, iniciar y cerrar una sesión local', async ({
     page.getByRole('heading', { name: 'Marketplace TI' }),
   ).toBeVisible()
   await expect(page.getByText('No hay especialistas disponibles')).toBeVisible()
+
+  await page.goto('/specialist/profile')
+  await expect(
+    page.getByRole('heading', { name: 'Datos del especialista' }),
+  ).toBeVisible()
+  await page.getByLabel('Nombre público').fill('Especialista E2E')
+  await page.getByLabel('Título profesional').fill('Arquitecto de pruebas')
+  await page
+    .getByLabel('Biografía')
+    .fill(
+      'Especialista sintético con experiencia suficiente para validar el portal privado de ITGO.',
+    )
+  await page.getByLabel('Años de experiencia').fill('8')
+  await page.getByLabel('Tarifa por hora (CLP)').fill('45000')
+  await page.locator('input[name="skillIds"]').first().check()
+  await page.getByRole('button', { name: 'Guardar perfil' }).click()
+  await expect(page.getByRole('status')).toContainText('guardado')
+  await page.goto('/specialist')
+  await expect(
+    page.getByRole('heading', { name: 'Especialista E2E' }),
+  ).toBeVisible()
+  await expect(page.getByText('pendiente de revisión')).toBeVisible()
 
   await page.getByRole('button', { name: 'Salir' }).click()
   await expect(page).toHaveURL(/\/auth\/login$/)

@@ -522,6 +522,41 @@ a {
   font-size: 1.5rem;
   color: var(--accent);
 }
+.skill-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  padding: 1rem;
+}
+.skill-selector label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  padding: 0.65rem;
+  cursor: pointer;
+}
+.skill-selector input {
+  width: auto;
+}
+.skill-selector span {
+  display: grid;
+}
+.skill-selector small {
+  color: var(--muted);
+}
+.metric-word {
+  font-size: 1.15rem !important;
+  text-transform: capitalize;
+}
+@media (max-width: 700px) {
+  .skill-selector {
+    grid-template-columns: 1fr 1fr;
+  }
+}
 @media (max-width: 900px) {
   .specialist-grid {
     grid-template-columns: repeat(2, 1fr);

@@ -1245,6 +1245,110 @@ export type Database = {
         }
         Relationships: []
       }
+      specialist_availability: {
+        Row: {
+          created_at: string
+          ends_at: string
+          id: string
+          is_active: boolean
+          modality: string
+          specialist_id: string
+          starts_at: string
+          time_zone: string
+          updated_at: string
+          weekday: number
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          id?: string
+          is_active?: boolean
+          modality: string
+          specialist_id: string
+          starts_at: string
+          time_zone?: string
+          updated_at?: string
+          weekday: number
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          id?: string
+          is_active?: boolean
+          modality?: string
+          specialist_id?: string
+          starts_at?: string
+          time_zone?: string
+          updated_at?: string
+          weekday?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'specialist_availability_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'specialist_availability_time_zone_fkey'
+            columns: ['time_zone']
+            isOneToOne: false
+            referencedRelation: 'time_zones'
+            referencedColumns: ['code']
+          },
+        ]
+      }
+      specialist_bank_accounts: {
+        Row: {
+          account_number_masked: string
+          account_reference_encrypted: string
+          account_type: string
+          bank_name: string
+          created_at: string
+          holder_name: string
+          holder_tax_id: string
+          id: string
+          specialist_id: string
+          updated_at: string
+          verification_status: string
+        }
+        Insert: {
+          account_number_masked: string
+          account_reference_encrypted: string
+          account_type: string
+          bank_name: string
+          created_at?: string
+          holder_name: string
+          holder_tax_id: string
+          id?: string
+          specialist_id: string
+          updated_at?: string
+          verification_status?: string
+        }
+        Update: {
+          account_number_masked?: string
+          account_reference_encrypted?: string
+          account_type?: string
+          bank_name?: string
+          created_at?: string
+          holder_name?: string
+          holder_tax_id?: string
+          id?: string
+          specialist_id?: string
+          updated_at?: string
+          verification_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'specialist_bank_accounts_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: true
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       specialist_certifications: {
         Row: {
           created_at: string
@@ -1294,6 +1398,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'specialist_certifications_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      specialist_portfolio: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          description: string
+          id: string
+          is_public: boolean
+          project_url: string | null
+          specialist_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          description: string
+          id?: string
+          is_public?: boolean
+          project_url?: string | null
+          specialist_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          description?: string
+          id?: string
+          is_public?: boolean
+          project_url?: string | null
+          specialist_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'specialist_portfolio_specialist_id_fkey'
             columns: ['specialist_id']
             isOneToOne: false
             referencedRelation: 'specialist_profiles'
@@ -1503,6 +1651,50 @@ export type Database = {
             foreignKeyName: 'specialist_skills_specialist_id_fkey'
             columns: ['specialist_id']
             isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      specialist_tax_profiles: {
+        Row: {
+          billing_email: string
+          created_at: string
+          id: string
+          legal_name: string
+          specialist_id: string
+          tax_id: string
+          taxpayer_type: string
+          updated_at: string
+          validation_status: string
+        }
+        Insert: {
+          billing_email: string
+          created_at?: string
+          id?: string
+          legal_name: string
+          specialist_id: string
+          tax_id: string
+          taxpayer_type: string
+          updated_at?: string
+          validation_status?: string
+        }
+        Update: {
+          billing_email?: string
+          created_at?: string
+          id?: string
+          legal_name?: string
+          specialist_id?: string
+          tax_id?: string
+          taxpayer_type?: string
+          updated_at?: string
+          validation_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'specialist_tax_profiles_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: true
             referencedRelation: 'specialist_profiles'
             referencedColumns: ['id']
           },
