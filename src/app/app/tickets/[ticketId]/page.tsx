@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { addTicketCommentAction } from '@/app/app/tickets/actions'
 import { Card } from '@/components/ui/card'
+import { TicketChat } from '@/components/tickets/ticket-chat'
 import { getTicket } from '@/services/ticket.service'
 
 export default async function TicketDetailPage({
@@ -72,6 +73,17 @@ export default async function TicketDetailPage({
           <ButtonLabel />
         </form>
       </Card>
+      {['assigned', 'in_progress', 'waiting_customer', 'resolved'].includes(
+        ticket.status,
+      ) && (
+        <Card>
+          <h2>Chat del servicio</h2>
+          <TicketChat
+            ticketId={ticket.id}
+            initialMessages={ticket.ticket_messages}
+          />
+        </Card>
+      )}
     </main>
   )
 }
