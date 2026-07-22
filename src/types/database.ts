@@ -1338,6 +1338,164 @@ export type Database = {
           },
         ]
       }
+      monitoring_alerts: {
+        Row: {
+          asset_id: string
+          created_at: string
+          description: string
+          external_alert_id: string | null
+          id: string
+          metadata: Json
+          occurred_at: string
+          resolved_at: string | null
+          severity: string
+          status: string
+          ticket_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          asset_id: string
+          created_at?: string
+          description: string
+          external_alert_id?: string | null
+          id?: string
+          metadata?: Json
+          occurred_at: string
+          resolved_at?: string | null
+          severity: string
+          status?: string
+          ticket_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          asset_id?: string
+          created_at?: string
+          description?: string
+          external_alert_id?: string | null
+          id?: string
+          metadata?: Json
+          occurred_at?: string
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          ticket_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'monitoring_alerts_asset_id_fkey'
+            columns: ['asset_id']
+            isOneToOne: false
+            referencedRelation: 'monitoring_assets'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'monitoring_alerts_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: false
+            referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      monitoring_assets: {
+        Row: {
+          asset_type: string
+          company_id: string
+          created_at: string
+          external_id: string | null
+          id: string
+          last_seen_at: string | null
+          managed_service_id: string | null
+          metadata: Json
+          name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          asset_type: string
+          company_id: string
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          last_seen_at?: string | null
+          managed_service_id?: string | null
+          metadata?: Json
+          name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          asset_type?: string
+          company_id?: string
+          created_at?: string
+          external_id?: string | null
+          id?: string
+          last_seen_at?: string | null
+          managed_service_id?: string | null
+          metadata?: Json
+          name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'monitoring_assets_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'monitoring_assets_managed_service_id_fkey'
+            columns: ['managed_service_id']
+            isOneToOne: false
+            referencedRelation: 'managed_services'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      monitoring_metrics: {
+        Row: {
+          asset_id: string
+          created_at: string
+          id: number
+          metric_name: string
+          metric_value: number
+          observed_at: string
+          unit: string | null
+        }
+        Insert: {
+          asset_id: string
+          created_at?: string
+          id?: never
+          metric_name: string
+          metric_value: number
+          observed_at: string
+          unit?: string | null
+        }
+        Update: {
+          asset_id?: string
+          created_at?: string
+          id?: never
+          metric_name?: string
+          metric_value?: number
+          observed_at?: string
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'monitoring_metrics_asset_id_fkey'
+            columns: ['asset_id']
+            isOneToOne: false
+            referencedRelation: 'monitoring_assets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -3194,6 +3352,10 @@ export type Database = {
           p_idempotency_key: string
           p_ticket_id: string
         }
+        Returns: string
+      }
+      create_ticket_from_critical_alert: {
+        Args: { p_alert_id: string }
         Returns: string
       }
       generate_ticket_matches: {
