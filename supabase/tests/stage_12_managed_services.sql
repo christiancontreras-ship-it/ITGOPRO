@@ -1,0 +1,6 @@
+begin;
+insert into auth.users(id,email,encrypted_password,raw_app_meta_data,raw_user_meta_data,aud,role) values('c0000000-0000-0000-0000-000000000001','managed-owner@example.test','', '{"provider":"email","providers":["email"]}','{}','authenticated','authenticated'),('c0000000-0000-0000-0000-000000000002','managed-outsider@example.test','', '{"provider":"email","providers":["email"]}','{}','authenticated','authenticated');
+set local role authenticated; set local request.jwt.claims='{"sub":"c0000000-0000-0000-0000-000000000001","role":"authenticated"}'; select public.create_company_with_owner('Managed Test SpA',null,null) as company_id \gset
+reset role; insert into public.managed_services(company_id,catalog_id,status,starts_at,monthly_amount,sla_hours,created_by) select :'company_id',id,'active',current_date,monthly_price,default_sla_hours,'c0000000-0000-0000-0000-000000000001' from public.managed_service_catalog where code='linux';
+set local role authenticated; set local request.jwt.claims='{"sub":"c0000000-0000-0000-0000-000000000002","role":"authenticated"}'; do $$ begin if(select count(*) from public.managed_services)<>0 then raise exception 'managed service leaked'; end if; end $$;
+rollback;

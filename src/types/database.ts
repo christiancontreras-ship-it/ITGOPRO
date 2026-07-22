@@ -1064,6 +1064,225 @@ export type Database = {
           },
         ]
       }
+      managed_service_assets: {
+        Row: {
+          asset_type: string
+          created_at: string
+          external_reference: string | null
+          id: string
+          managed_service_id: string
+          metadata: Json
+          name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          asset_type: string
+          created_at?: string
+          external_reference?: string | null
+          id?: string
+          managed_service_id: string
+          metadata?: Json
+          name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          asset_type?: string
+          created_at?: string
+          external_reference?: string | null
+          id?: string
+          managed_service_id?: string
+          metadata?: Json
+          name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'managed_service_assets_managed_service_id_fkey'
+            columns: ['managed_service_id']
+            isOneToOne: false
+            referencedRelation: 'managed_services'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      managed_service_catalog: {
+        Row: {
+          code: string
+          created_at: string
+          currency_code: string
+          default_sla_hours: number
+          description: string
+          id: string
+          is_active: boolean
+          monthly_price: number
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency_code?: string
+          default_sla_hours: number
+          description: string
+          id?: string
+          is_active?: boolean
+          monthly_price: number
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency_code?: string
+          default_sla_hours?: number
+          description?: string
+          id?: string
+          is_active?: boolean
+          monthly_price?: number
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'managed_service_catalog_currency_code_fkey'
+            columns: ['currency_code']
+            isOneToOne: false
+            referencedRelation: 'currencies'
+            referencedColumns: ['code']
+          },
+        ]
+      }
+      managed_service_checklists: {
+        Row: {
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          id: string
+          items: Json
+          managed_service_id: string
+          period_end: string
+          period_start: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          id?: string
+          items?: Json
+          managed_service_id: string
+          period_end: string
+          period_start: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          id?: string
+          items?: Json
+          managed_service_id?: string
+          period_end?: string
+          period_start?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'managed_service_checklists_completed_by_fkey'
+            columns: ['completed_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'managed_service_checklists_managed_service_id_fkey'
+            columns: ['managed_service_id']
+            isOneToOne: false
+            referencedRelation: 'managed_services'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      managed_services: {
+        Row: {
+          auto_renew: boolean
+          catalog_id: string
+          company_id: string
+          created_at: string
+          created_by: string
+          ends_at: string | null
+          id: string
+          monthly_amount: number
+          sla_hours: number
+          specialist_id: string | null
+          starts_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          auto_renew?: boolean
+          catalog_id: string
+          company_id: string
+          created_at?: string
+          created_by: string
+          ends_at?: string | null
+          id?: string
+          monthly_amount: number
+          sla_hours: number
+          specialist_id?: string | null
+          starts_at: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          auto_renew?: boolean
+          catalog_id?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          ends_at?: string | null
+          id?: string
+          monthly_amount?: number
+          sla_hours?: number
+          specialist_id?: string | null
+          starts_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'managed_services_catalog_id_fkey'
+            columns: ['catalog_id']
+            isOneToOne: false
+            referencedRelation: 'managed_service_catalog'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'managed_services_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'managed_services_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'managed_services_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       membership_roles: {
         Row: {
           assigned_at: string
