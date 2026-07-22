@@ -14,3 +14,13 @@ export async function selectCandidateAction(formData: FormData) {
   if (error) throw error
   revalidatePath(`/app/tickets/${ticketId}/candidates`)
 }
+
+export async function generateMatchesAction(formData: FormData) {
+  const ticketId = String(formData.get('ticketId'))
+  const supabase = await createSupabaseServerClient()
+  const { error } = await supabase.rpc('generate_ticket_matches', {
+    p_ticket_id: ticketId,
+  })
+  if (error) throw error
+  revalidatePath(`/app/tickets/${ticketId}/candidates`)
+}

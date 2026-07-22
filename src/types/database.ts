@@ -2226,6 +2226,118 @@ export type Database = {
           },
         ]
       }
+      ticket_match_results: {
+        Row: {
+          availability_score: number
+          created_at: string
+          explanation: Json
+          id: string
+          price_score: number
+          rank: number
+          reputation_score: number
+          run_id: string
+          skill_score: number
+          specialist_id: string
+          ticket_id: string
+          total_score: number
+        }
+        Insert: {
+          availability_score: number
+          created_at?: string
+          explanation?: Json
+          id?: string
+          price_score: number
+          rank: number
+          reputation_score: number
+          run_id: string
+          skill_score: number
+          specialist_id: string
+          ticket_id: string
+          total_score: number
+        }
+        Update: {
+          availability_score?: number
+          created_at?: string
+          explanation?: Json
+          id?: string
+          price_score?: number
+          rank?: number
+          reputation_score?: number
+          run_id?: string
+          skill_score?: number
+          specialist_id?: string
+          ticket_id?: string
+          total_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ticket_match_results_run_id_fkey'
+            columns: ['run_id']
+            isOneToOne: false
+            referencedRelation: 'ticket_match_runs'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_match_results_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_match_results_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: false
+            referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      ticket_match_runs: {
+        Row: {
+          algorithm_version: string
+          candidate_count: number
+          created_at: string
+          id: string
+          requested_by: string
+          status: string
+          ticket_id: string
+        }
+        Insert: {
+          algorithm_version: string
+          candidate_count?: number
+          created_at?: string
+          id?: string
+          requested_by: string
+          status?: string
+          ticket_id: string
+        }
+        Update: {
+          algorithm_version?: string
+          candidate_count?: number
+          created_at?: string
+          id?: string
+          requested_by?: string
+          status?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ticket_match_runs_requested_by_fkey'
+            columns: ['requested_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_match_runs_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: false
+            referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       ticket_messages: {
         Row: {
           body: string
@@ -2544,6 +2656,10 @@ export type Database = {
     Functions: {
       create_company_with_owner: {
         Args: { legal_name: string; tax_id?: string; trade_name?: string }
+        Returns: string
+      }
+      generate_ticket_matches: {
+        Args: { p_ticket_id: string }
         Returns: string
       }
       normalize_domain: { Args: { value: string }; Returns: string }

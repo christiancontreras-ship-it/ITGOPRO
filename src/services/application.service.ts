@@ -39,3 +39,24 @@ export async function listTicketCandidates(ticketId: string) {
   if (error) throw error
   return data ?? []
 }
+
+export async function listLatestMatches(ticketId: string) {
+  const supabase = await createSupabaseServerClient()
+  const { data: run } = await supabase
+    .from('ticket_match_runs')
+    .select('id')
+    .eq('ticket_id', ticketId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (!run) return []
+  const { data, error } = await supabase
+    .from('ticket_match_results')
+    .select(
+      'id,total_score,rank,explanation,specialist_profiles(public_name,professional_title,rating_average)',
+    )
+    .eq('run_id', run.id)
+    .order('rank')
+  if (error) throw error
+  return data ?? []
+}
