@@ -1172,6 +1172,293 @@ export type Database = {
         }
         Relationships: []
       }
+      ticket_categories: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ticket_comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          ticket_id: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          ticket_id: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          ticket_id?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ticket_comments_author_id_fkey'
+            columns: ['author_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_comments_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: false
+            referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      ticket_files: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          id: string
+          mime_type: string
+          original_name: string
+          size_bytes: number
+          status: string
+          storage_path: string
+          ticket_id: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          mime_type: string
+          original_name: string
+          size_bytes: number
+          status?: string
+          storage_path: string
+          ticket_id: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          mime_type?: string
+          original_name?: string
+          size_bytes?: number
+          status?: string
+          storage_path?: string
+          ticket_id?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ticket_files_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: false
+            referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_files_uploaded_by_fkey'
+            columns: ['uploaded_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      ticket_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          from_status: string | null
+          id: string
+          metadata: Json
+          reason: string | null
+          ticket_id: string
+          to_status: string
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          metadata?: Json
+          reason?: string | null
+          ticket_id: string
+          to_status: string
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          metadata?: Json
+          reason?: string | null
+          ticket_id?: string
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ticket_status_history_changed_by_fkey'
+            columns: ['changed_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_status_history_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: false
+            referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      tickets: {
+        Row: {
+          category_id: string
+          closed_at: string | null
+          code: string
+          company_id: string
+          created_at: string
+          deleted_at: string | null
+          description: string
+          estimated_cost: number | null
+          final_cost: number | null
+          first_responded_at: string | null
+          id: string
+          modality: string
+          priority: string
+          published_at: string | null
+          region_id: string | null
+          requester_id: string
+          resolution_due_at: string
+          resolved_at: string | null
+          response_due_at: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          closed_at?: string | null
+          code: string
+          company_id: string
+          created_at?: string
+          deleted_at?: string | null
+          description: string
+          estimated_cost?: number | null
+          final_cost?: number | null
+          first_responded_at?: string | null
+          id?: string
+          modality: string
+          priority: string
+          published_at?: string | null
+          region_id?: string | null
+          requester_id: string
+          resolution_due_at?: string
+          resolved_at?: string | null
+          response_due_at?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          closed_at?: string | null
+          code?: string
+          company_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          description?: string
+          estimated_cost?: number | null
+          final_cost?: number | null
+          first_responded_at?: string | null
+          id?: string
+          modality?: string
+          priority?: string
+          published_at?: string | null
+          region_id?: string | null
+          requester_id?: string
+          resolution_due_at?: string
+          resolved_at?: string | null
+          response_due_at?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'tickets_category_id_fkey'
+            columns: ['category_id']
+            isOneToOne: false
+            referencedRelation: 'ticket_categories'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'tickets_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'tickets_region_id_fkey'
+            columns: ['region_id']
+            isOneToOne: false
+            referencedRelation: 'regions'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'tickets_requester_id_fkey'
+            columns: ['requester_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       time_zones: {
         Row: {
           code: string

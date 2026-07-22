@@ -18,6 +18,7 @@ export default async function PrivateLayout({
         </Link>
         <nav>
           <Link href="/app">Resumen</Link>
+          <Link href="/app/tickets">Tickets</Link>
           <Link href="/app/security">Seguridad</Link>
           <form action={logoutAction}>
             <button type="submit">Salir</button>

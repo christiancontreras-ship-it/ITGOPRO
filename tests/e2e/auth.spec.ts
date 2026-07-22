@@ -26,6 +26,21 @@ test('permite registrar, iniciar y cerrar una sesión local', async ({
   await expect(page).toHaveURL(/\/app$/, { timeout: 15_000 })
   await expect(page.getByText('Panel cliente')).toBeVisible({ timeout: 15_000 })
 
+  await page.getByRole('link', { name: 'Crear ticket' }).click()
+  await page.getByLabel('Título').fill('Servidor principal sin acceso')
+  await page.getByLabel('Categoría').selectOption({ label: 'Windows Server' })
+  await page.getByLabel('Prioridad').selectOption('critical')
+  await page
+    .getByLabel('Descripción')
+    .fill(
+      'El servidor principal no permite conexiones remotas desde esta mañana.',
+    )
+  await page.getByRole('button', { name: 'Crear ticket' }).click()
+  await expect(
+    page.getByRole('heading', { name: 'Servidor principal sin acceso' }),
+  ).toBeVisible({ timeout: 15_000 })
+  await expect(page.getByText(/^ITG-/)).toBeVisible()
+
   await page.getByRole('button', { name: 'Salir' }).click()
   await expect(page).toHaveURL(/\/auth\/login$/)
 })
