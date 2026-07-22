@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { addTicketCommentAction } from '@/app/app/tickets/actions'
 import { Card } from '@/components/ui/card'
@@ -19,6 +20,11 @@ export default async function TicketDetailPage({
     <main className="dashboard-shell">
       <p className="eyebrow">{ticket.code}</p>
       <h1>{ticket.title}</h1>
+      {ticket.status === 'published' && (
+        <Link className="button" href={`/app/tickets/${ticket.id}/candidates`}>
+          Revisar candidatos
+        </Link>
+      )}
       <section className="ticket-detail-grid">
         <Card>
           <dl>

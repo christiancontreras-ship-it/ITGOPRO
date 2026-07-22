@@ -1700,6 +1700,258 @@ export type Database = {
           },
         ]
       }
+      ticket_application_messages: {
+        Row: {
+          application_id: string
+          body: string
+          created_at: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          application_id: string
+          body: string
+          created_at?: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          application_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ticket_application_messages_application_id_fkey'
+            columns: ['application_id']
+            isOneToOne: false
+            referencedRelation: 'ticket_applications'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_application_messages_sender_id_fkey'
+            columns: ['sender_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      ticket_application_versions: {
+        Row: {
+          application_id: string
+          created_at: string
+          created_by: string
+          id: string
+          snapshot: Json
+          version: number
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          snapshot: Json
+          version: number
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          snapshot?: Json
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ticket_application_versions_application_id_fkey'
+            columns: ['application_id']
+            isOneToOne: false
+            referencedRelation: 'ticket_applications'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_application_versions_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      ticket_applications: {
+        Row: {
+          amount: number
+          assumptions: string | null
+          available_from: string
+          billing_type: string
+          created_at: string
+          currency_code: string
+          estimated_end_at: string
+          estimated_hours: number | null
+          exclusions: string | null
+          id: string
+          modality: string
+          solution_summary: string
+          specialist_id: string
+          status: string
+          submitted_at: string | null
+          ticket_id: string
+          updated_at: string
+          valid_until: string
+          version: number
+          warranty: string | null
+        }
+        Insert: {
+          amount: number
+          assumptions?: string | null
+          available_from: string
+          billing_type: string
+          created_at?: string
+          currency_code?: string
+          estimated_end_at: string
+          estimated_hours?: number | null
+          exclusions?: string | null
+          id?: string
+          modality: string
+          solution_summary: string
+          specialist_id: string
+          status?: string
+          submitted_at?: string | null
+          ticket_id: string
+          updated_at?: string
+          valid_until: string
+          version?: number
+          warranty?: string | null
+        }
+        Update: {
+          amount?: number
+          assumptions?: string | null
+          available_from?: string
+          billing_type?: string
+          created_at?: string
+          currency_code?: string
+          estimated_end_at?: string
+          estimated_hours?: number | null
+          exclusions?: string | null
+          id?: string
+          modality?: string
+          solution_summary?: string
+          specialist_id?: string
+          status?: string
+          submitted_at?: string | null
+          ticket_id?: string
+          updated_at?: string
+          valid_until?: string
+          version?: number
+          warranty?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ticket_applications_currency_code_fkey'
+            columns: ['currency_code']
+            isOneToOne: false
+            referencedRelation: 'currencies'
+            referencedColumns: ['code']
+          },
+          {
+            foreignKeyName: 'ticket_applications_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_applications_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: false
+            referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      ticket_assignments: {
+        Row: {
+          accepted_at: string | null
+          application_id: string
+          completed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          rejected_at: string | null
+          rejection_reason: string | null
+          selected_by: string
+          specialist_id: string
+          started_at: string | null
+          status: string
+          ticket_id: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          application_id: string
+          completed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          selected_by: string
+          specialist_id: string
+          started_at?: string | null
+          status?: string
+          ticket_id: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          application_id?: string
+          completed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          selected_by?: string
+          specialist_id?: string
+          started_at?: string | null
+          status?: string
+          ticket_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'ticket_assignments_application_id_fkey'
+            columns: ['application_id']
+            isOneToOne: false
+            referencedRelation: 'ticket_applications'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_assignments_selected_by_fkey'
+            columns: ['selected_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_assignments_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'ticket_assignments_ticket_id_fkey'
+            columns: ['ticket_id']
+            isOneToOne: false
+            referencedRelation: 'tickets'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       ticket_categories: {
         Row: {
           code: string
@@ -1946,6 +2198,8 @@ export type Database = {
       }
       tickets: {
         Row: {
+          applications_close_at: string | null
+          assigned_specialist_id: string | null
           category_id: string
           closed_at: string | null
           code: string
@@ -1968,8 +2222,11 @@ export type Database = {
           status: string
           title: string
           updated_at: string
+          work_started_at: string | null
         }
         Insert: {
+          applications_close_at?: string | null
+          assigned_specialist_id?: string | null
           category_id: string
           closed_at?: string | null
           code: string
@@ -1992,8 +2249,11 @@ export type Database = {
           status?: string
           title: string
           updated_at?: string
+          work_started_at?: string | null
         }
         Update: {
+          applications_close_at?: string | null
+          assigned_specialist_id?: string | null
           category_id?: string
           closed_at?: string | null
           code?: string
@@ -2016,8 +2276,16 @@ export type Database = {
           status?: string
           title?: string
           updated_at?: string
+          work_started_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: 'tickets_assigned_specialist_id_fkey'
+            columns: ['assigned_specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
           {
             foreignKeyName: 'tickets_category_id_fkey'
             columns: ['category_id']
@@ -2139,6 +2407,18 @@ export type Database = {
       normalize_domain: { Args: { value: string }; Returns: string }
       normalize_email: { Args: { value: string }; Returns: string }
       normalize_tax_id: { Args: { value: string }; Returns: string }
+      respond_ticket_assignment: {
+        Args: { p_accept: boolean; p_assignment_id: string; p_reason?: string }
+        Returns: undefined
+      }
+      select_ticket_candidate: {
+        Args: { p_application_id: string; p_ticket_id: string }
+        Returns: string
+      }
+      start_ticket_work: {
+        Args: { p_assignment_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

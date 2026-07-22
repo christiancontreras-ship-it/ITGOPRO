@@ -19,6 +19,8 @@ export default async function SpecialistLayout({
         <nav>
           <Link href="/specialist">Dashboard</Link>
           <Link href="/specialist/profile">Perfil</Link>
+          <Link href="/specialist/opportunities">Oportunidades</Link>
+          <Link href="/specialist/applications">Postulaciones</Link>
           <Link href="/app">Portal cliente</Link>
           <form action={logoutAction}>
             <button type="submit">Salir</button>
