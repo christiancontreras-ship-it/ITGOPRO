@@ -20,9 +20,9 @@
 
 Crear en el proveedor DNS actual:
 
-| Tipo | Nombre | Valor |
-| --- | --- | --- |
-| A | `www` | `76.76.21.21` |
+| Tipo | Nombre | Valor         |
+| ---- | ------ | ------------- |
+| A    | `www`  | `76.76.21.21` |
 
 No cambiar `NEXT_PUBLIC_APP_URL` ni la URL principal de Supabase Auth hasta que
 Vercel confirme el dominio como válido y el certificado TLS esté activo.
