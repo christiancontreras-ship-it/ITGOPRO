@@ -1155,6 +1155,86 @@ export type Database = {
         }
         Relationships: []
       }
+      deployment_history: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          environment: string
+          id: string
+          metadata: Json
+          provider_deployment_id: string | null
+          release_id: string | null
+          started_at: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          environment: string
+          id?: string
+          metadata?: Json
+          provider_deployment_id?: string | null
+          release_id?: string | null
+          started_at?: string
+          status: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          environment?: string
+          id?: string
+          metadata?: Json
+          provider_deployment_id?: string | null
+          release_id?: string | null
+          started_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'deployment_history_release_id_fkey'
+            columns: ['release_id']
+            isOneToOne: false
+            referencedRelation: 'platform_releases'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      feature_flags: {
+        Row: {
+          created_at: string
+          description: string
+          enabled: boolean
+          environment: string
+          expires_at: string | null
+          id: string
+          key: string
+          rollout_percentage: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          enabled?: boolean
+          environment?: string
+          expires_at?: string | null
+          id?: string
+          key: string
+          rollout_percentage?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          enabled?: boolean
+          environment?: string
+          expires_at?: string | null
+          id?: string
+          key?: string
+          rollout_percentage?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       financial_accounts: {
         Row: {
           account_type: string
@@ -1752,6 +1832,45 @@ export type Database = {
           },
         ]
       }
+      operational_runbooks: {
+        Row: {
+          code: string
+          created_at: string
+          document_path: string
+          enabled: boolean
+          id: string
+          last_reviewed_at: string | null
+          owner_role: string
+          severity: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          document_path: string
+          enabled?: boolean
+          id?: string
+          last_reviewed_at?: string | null
+          owner_role: string
+          severity: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          document_path?: string
+          enabled?: boolean
+          id?: string
+          last_reviewed_at?: string | null
+          owner_role?: string
+          severity?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       partner_clients: {
         Row: {
           client_company_id: string
@@ -2053,6 +2172,39 @@ export type Database = {
             referencedColumns: ['code']
           },
         ]
+      }
+      platform_releases: {
+        Row: {
+          commit_sha: string
+          created_at: string
+          id: string
+          notes: string | null
+          released_at: string | null
+          status: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          commit_sha: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          released_at?: string | null
+          status?: string
+          updated_at?: string
+          version: string
+        }
+        Update: {
+          commit_sha?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          released_at?: string | null
+          status?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
       }
       platform_settings: {
         Row: {

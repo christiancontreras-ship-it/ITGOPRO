@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-
 import { platformStatus } from '@/lib/operations/health'
 
-export function GET(): NextResponse {
+export const dynamic = 'force-dynamic'
+export function GET() {
   return NextResponse.json(platformStatus())
 }

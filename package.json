@@ -1,6 +1,6 @@
 {
   "name": "itgo",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "Plataforma SaaS y marketplace de servicios TI OnDemand y Servicios Gestionados.",
   "engines": {
@@ -25,7 +25,9 @@
     "supabase:status": "supabase status",
     "db:reset": "supabase db reset --local",
     "validate": "npm run lint && npm run typecheck && npm run test && npm run build",
-    "security:check": "node scripts/security-check.mjs"
+    "security:check": "node scripts/security-check.mjs",
+    "smoke": "node scripts/smoke-test.mjs",
+    "load:test": "node scripts/load-test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",
