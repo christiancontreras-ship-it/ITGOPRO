@@ -24,7 +24,8 @@
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",
     "db:reset": "supabase db reset --local",
-    "validate": "npm run lint && npm run typecheck && npm run test && npm run build"
+    "validate": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "security:check": "node scripts/security-check.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",

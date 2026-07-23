@@ -1012,6 +1012,110 @@ export type Database = {
         }
         Relationships: []
       }
+      continuity_plans: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          criticality: string
+          id: string
+          last_tested_at: string | null
+          next_test_at: string | null
+          process_name: string
+          rpo_minutes: number
+          rto_minutes: number
+          status: string
+          strategy: string
+          updated_at: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          criticality: string
+          id?: string
+          last_tested_at?: string | null
+          next_test_at?: string | null
+          process_name: string
+          rpo_minutes: number
+          rto_minutes: number
+          status?: string
+          strategy: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          criticality?: string
+          id?: string
+          last_tested_at?: string | null
+          next_test_at?: string | null
+          process_name?: string
+          rpo_minutes?: number
+          rto_minutes?: number
+          status?: string
+          strategy?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'continuity_plans_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      continuity_restore_tests: {
+        Row: {
+          achieved_rpo_minutes: number | null
+          achieved_rto_minutes: number | null
+          created_at: string
+          evidence_reference: string | null
+          id: string
+          plan_id: string
+          result: string
+          tested_at: string
+          tested_by: string
+        }
+        Insert: {
+          achieved_rpo_minutes?: number | null
+          achieved_rto_minutes?: number | null
+          created_at?: string
+          evidence_reference?: string | null
+          id?: string
+          plan_id: string
+          result: string
+          tested_at: string
+          tested_by: string
+        }
+        Update: {
+          achieved_rpo_minutes?: number | null
+          achieved_rto_minutes?: number | null
+          created_at?: string
+          evidence_reference?: string | null
+          id?: string
+          plan_id?: string
+          result?: string
+          tested_at?: string
+          tested_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'continuity_restore_tests_plan_id_fkey'
+            columns: ['plan_id']
+            isOneToOne: false
+            referencedRelation: 'continuity_plans'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'continuity_restore_tests_tested_by_fkey'
+            columns: ['tested_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       countries: {
         Row: {
           code: string
@@ -2026,6 +2130,103 @@ export type Database = {
           },
         ]
       }
+      privacy_processing_activities: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          data_categories: string[]
+          id: string
+          lawful_basis: string
+          name: string
+          processors: string[]
+          purpose: string
+          retention_period: string
+          status: string
+          subject_categories: string[]
+          updated_at: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          data_categories: string[]
+          id?: string
+          lawful_basis: string
+          name: string
+          processors?: string[]
+          purpose: string
+          retention_period: string
+          status?: string
+          subject_categories: string[]
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          data_categories?: string[]
+          id?: string
+          lawful_basis?: string
+          name?: string
+          processors?: string[]
+          purpose?: string
+          retention_period?: string
+          status?: string
+          subject_categories?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'privacy_processing_activities_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      privacy_subject_requests: {
+        Row: {
+          created_at: string
+          decision_reason: string | null
+          due_at: string
+          id: string
+          identity_verified_at: string | null
+          request_type: string
+          requester_user_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          decision_reason?: string | null
+          due_at: string
+          id?: string
+          identity_verified_at?: string | null
+          request_type: string
+          requester_user_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          decision_reason?: string | null
+          due_at?: string
+          id?: string
+          identity_verified_at?: string | null
+          request_type?: string
+          requester_user_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'privacy_subject_requests_requester_user_id_fkey'
+            columns: ['requester_user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_path: string | null
@@ -2192,6 +2393,183 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      security_controls: {
+        Row: {
+          code: string
+          control_type: string
+          created_at: string
+          evidence_reference: string | null
+          id: string
+          implementation_status: string
+          last_tested_at: string | null
+          next_test_at: string | null
+          objective: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          control_type: string
+          created_at?: string
+          evidence_reference?: string | null
+          id?: string
+          implementation_status?: string
+          last_tested_at?: string | null
+          next_test_at?: string | null
+          objective: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          control_type?: string
+          created_at?: string
+          evidence_reference?: string | null
+          id?: string
+          implementation_status?: string
+          last_tested_at?: string | null
+          next_test_at?: string | null
+          objective?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      security_incidents: {
+        Row: {
+          commander_id: string | null
+          company_id: string | null
+          contained_at: string | null
+          created_at: string
+          description: string
+          detected_at: string
+          id: string
+          personal_data_involved: boolean
+          resolved_at: string | null
+          severity: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          commander_id?: string | null
+          company_id?: string | null
+          contained_at?: string | null
+          created_at?: string
+          description: string
+          detected_at: string
+          id?: string
+          personal_data_involved?: boolean
+          resolved_at?: string | null
+          severity: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          commander_id?: string | null
+          company_id?: string | null
+          contained_at?: string | null
+          created_at?: string
+          description?: string
+          detected_at?: string
+          id?: string
+          personal_data_involved?: boolean
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'security_incidents_commander_id_fkey'
+            columns: ['commander_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'security_incidents_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      security_risks: {
+        Row: {
+          category: string
+          code: string
+          company_id: string | null
+          created_at: string
+          description: string
+          id: string
+          impact: number
+          inherent_score: number | null
+          owner_id: string | null
+          probability: number
+          residual_score: number | null
+          review_due_at: string | null
+          status: string
+          title: string
+          treatment: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          code: string
+          company_id?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          impact: number
+          inherent_score?: number | null
+          owner_id?: string | null
+          probability: number
+          residual_score?: number | null
+          review_due_at?: string | null
+          status?: string
+          title: string
+          treatment: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          code?: string
+          company_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          impact?: number
+          inherent_score?: number | null
+          owner_id?: string | null
+          probability?: number
+          residual_score?: number | null
+          review_due_at?: string | null
+          status?: string
+          title?: string
+          treatment?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'security_risks_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'security_risks_owner_id_fkey'
+            columns: ['owner_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       skills: {
         Row: {

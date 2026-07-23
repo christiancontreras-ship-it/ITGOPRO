@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { verifyWebhookSignature } from '@/lib/security/webhook-signature'
+import { consumeRateLimit } from '@/lib/security/rate-limit'
 import type { Database } from '@/types/database'
 
 const payloadSchema = z
@@ -15,6 +16,13 @@ const payloadSchema = z
   })
   .strict()
 export async function POST(request: Request) {
+  const rate = consumeRateLimit(
+    `monitoring:${request.headers.get('x-forwarded-for') ?? 'unknown'}`,
+    120,
+    60_000,
+  )
+  if (!rate.allowed)
+    return NextResponse.json({ error: 'rate_limited' }, { status: 429 })
   const body = await request.text()
   const secret = process.env.MONITORING_WEBHOOK_SECRET ?? ''
   if (
