@@ -34,6 +34,158 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_api_keys: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          key_hash: string
+          last_used_at: string | null
+          name: string
+          revoked_at: string | null
+          scopes: string[]
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          key_hash: string
+          last_used_at?: string | null
+          name: string
+          revoked_at?: string | null
+          scopes?: string[]
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          key_hash?: string
+          last_used_at?: string | null
+          name?: string
+          revoked_at?: string | null
+          scopes?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'analytics_api_keys_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'analytics_api_keys_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      analytics_daily_company_metrics: {
+        Row: {
+          active_managed_services: number
+          company_id: string
+          critical_tickets: number
+          metric_date: string
+          open_alerts: number
+          payments_captured: number
+          platform_commission: number
+          refreshed_at: string
+          tickets_closed: number
+          tickets_created: number
+        }
+        Insert: {
+          active_managed_services?: number
+          company_id: string
+          critical_tickets?: number
+          metric_date: string
+          open_alerts?: number
+          payments_captured?: number
+          platform_commission?: number
+          refreshed_at?: string
+          tickets_closed?: number
+          tickets_created?: number
+        }
+        Update: {
+          active_managed_services?: number
+          company_id?: string
+          critical_tickets?: number
+          metric_date?: string
+          open_alerts?: number
+          payments_captured?: number
+          platform_commission?: number
+          refreshed_at?: string
+          tickets_closed?: number
+          tickets_created?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'analytics_daily_company_metrics_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      analytics_goals: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string
+          id: string
+          metric_code: string
+          period_end: string
+          period_start: string
+          target_value: number
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          metric_code: string
+          period_end: string
+          period_start: string
+          target_value: number
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          metric_code?: string
+          period_end?: string
+          period_start?: string
+          target_value?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'analytics_goals_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'analytics_goals_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       audit_events: {
         Row: {
           action: string | null
@@ -3504,6 +3656,10 @@ export type Database = {
       normalize_domain: { Args: { value: string }; Returns: string }
       normalize_email: { Args: { value: string }; Returns: string }
       normalize_tax_id: { Args: { value: string }; Returns: string }
+      refresh_company_daily_metrics: {
+        Args: { p_company_id: string; p_date?: string }
+        Returns: undefined
+      }
       respond_ticket_assignment: {
         Args: { p_accept: boolean; p_assignment_id: string; p_reason?: string }
         Returns: undefined
