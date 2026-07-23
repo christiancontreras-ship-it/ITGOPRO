@@ -1,0 +1,3 @@
+-- Production baseline marker.
+-- Legacy enum types were moved to legacy_20260723 to avoid name collisions.
+-- New environments require no action.

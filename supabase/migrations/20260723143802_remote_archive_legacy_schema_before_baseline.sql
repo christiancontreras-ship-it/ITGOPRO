@@ -1,0 +1,3 @@
+-- Production baseline marker.
+-- The pre-v1 empty public tables were preserved in legacy_20260723 before the
+-- repository migrations were first applied. New environments require no action.

@@ -1,0 +1,3 @@
+-- Production baseline marker.
+-- Legacy functions were moved to legacy_20260723 after the v1 baseline.
+-- New environments require no action.
