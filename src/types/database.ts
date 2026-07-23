@@ -1496,6 +1496,145 @@ export type Database = {
           },
         ]
       }
+      partner_clients: {
+        Row: {
+          client_company_id: string
+          created_at: string
+          created_by: string
+          ends_at: string | null
+          partner_id: string
+          starts_at: string
+          status: string
+        }
+        Insert: {
+          client_company_id: string
+          created_at?: string
+          created_by: string
+          ends_at?: string | null
+          partner_id: string
+          starts_at?: string
+          status?: string
+        }
+        Update: {
+          client_company_id?: string
+          created_at?: string
+          created_by?: string
+          ends_at?: string | null
+          partner_id?: string
+          starts_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'partner_clients_client_company_id_fkey'
+            columns: ['client_company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'partner_clients_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'partner_clients_partner_id_fkey'
+            columns: ['partner_id']
+            isOneToOne: false
+            referencedRelation: 'partner_profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      partner_profiles: {
+        Row: {
+          approved_at: string | null
+          commission_percent: number
+          company_id: string
+          created_at: string
+          id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          commission_percent?: number
+          company_id: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          commission_percent?: number
+          company_id?: string
+          created_at?: string
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'partner_profiles_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: true
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      partner_specialists: {
+        Row: {
+          added_by: string
+          created_at: string
+          partner_id: string
+          specialist_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          added_by: string
+          created_at?: string
+          partner_id: string
+          specialist_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          added_by?: string
+          created_at?: string
+          partner_id?: string
+          specialist_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'partner_specialists_added_by_fkey'
+            columns: ['added_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'partner_specialists_partner_id_fkey'
+            columns: ['partner_id']
+            isOneToOne: false
+            referencedRelation: 'partner_profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'partner_specialists_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
