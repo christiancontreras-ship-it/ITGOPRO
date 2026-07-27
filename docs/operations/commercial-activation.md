@@ -3,7 +3,7 @@
 ## Datos confirmados
 
 - Super Admin solicitado: `christian.contreras@icloud.com`
-- Dominio público: `www.itgo.cl`
+- Dominio público: `www.itgopro.cl`
 - Proveedores de pago: Transbank y Mercado Pago
 - Repositorio: `christiancontreras-ship-it/ITGOPRO`
 
@@ -12,17 +12,16 @@
 - La versión consolidada está publicada en la rama
   `feature/etapa-17-production-readiness`.
 - Vercel está conectado al repositorio `ITGOPRO`.
-- `www.itgo.cl` está asociado al proyecto Vercel `itgopro`.
+- `itgopro.cl` y `www.itgopro.cl` están asociados al proyecto Vercel `itgopro`.
 - La producción continúa disponible en `https://itgopro.vercel.app` mientras se
   completa la verificación DNS.
 
 ## DNS requerido
 
-Crear en el proveedor DNS actual:
+El dominio fue registrado en NIC Chile y delegado a Vercel mediante:
 
-| Tipo | Nombre | Valor         |
-| ---- | ------ | ------------- |
-| A    | `www`  | `76.76.21.21` |
+- `ns1.vercel-dns.com`
+- `ns2.vercel-dns.com`
 
 No cambiar `NEXT_PUBLIC_APP_URL` ni la URL principal de Supabase Auth hasta que
 Vercel confirme el dominio como válido y el certificado TLS esté activo.
