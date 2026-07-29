@@ -1,17 +1,23 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { analyzeTicketAction } from './ai-actions'
-import { addTicketCommentAction } from '@/app/app/tickets/actions'
+import {
+  addTicketCommentAction,
+  publishTicketAction,
+} from '@/app/app/tickets/actions'
 import { Card } from '@/components/ui/card'
 import { TicketChat } from '@/components/tickets/ticket-chat'
 import { getTicket } from '@/services/ticket.service'
 
 export default async function TicketDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ ticketId: string }>
+  searchParams: Promise<{ error?: string }>
 }) {
   const { ticketId } = await params
+  const { error } = await searchParams
   const ticket = await getTicket(ticketId)
   if (!ticket) notFound()
   const latestAnalysis = ticket.ticket_ai_analyses[0]
@@ -23,6 +29,20 @@ export default async function TicketDetailPage({
     <main className="dashboard-shell">
       <p className="eyebrow">{ticket.code}</p>
       <h1>{ticket.title}</h1>
+      {error === 'publish' && (
+        <p className="form-message error" role="alert">
+          No fue posible publicar el ticket. Recarga la página e inténtalo
+          nuevamente.
+        </p>
+      )}
+      {ticket.status === 'new' && (
+        <form action={publishTicketAction}>
+          <input type="hidden" name="ticketId" value={ticket.id} />
+          <button className="button" type="submit">
+            Publicar ticket
+          </button>
+        </form>
+      )}
       {ticket.status === 'published' && (
         <Link className="button" href={`/app/tickets/${ticket.id}/candidates`}>
           Revisar candidatos

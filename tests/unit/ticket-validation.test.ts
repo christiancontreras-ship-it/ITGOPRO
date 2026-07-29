@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { createTicketSchema } from '@/lib/validation/ticket'
+import {
+  createTicketSchema,
+  publishTicketSchema,
+} from '@/lib/validation/ticket'
 
 const valid = {
   companyId: '45f84435-c507-42f6-9f79-77517b2637f0',
@@ -20,4 +23,14 @@ describe('validación de tickets', () => {
         description: 'corta',
       }).success,
     ).toBe(false))
+  it('valida el identificador antes de publicar', () => {
+    expect(
+      publishTicketSchema.safeParse({
+        ticketId: '6fa7384f-34fd-4ca5-82a8-0b0ef6245a2d',
+      }).success,
+    ).toBe(true)
+    expect(
+      publishTicketSchema.safeParse({ ticketId: 'invalido' }).success,
+    ).toBe(false)
+  })
 })

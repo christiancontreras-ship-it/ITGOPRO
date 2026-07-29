@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import {
   createTicketSchema,
+  publishTicketSchema,
   type TicketActionState,
   ticketCommentSchema,
 } from '@/lib/validation/ticket'
@@ -60,4 +61,40 @@ export async function addTicketCommentAction(formData: FormData) {
     body: parsed.data.body,
   })
   revalidatePath(`/app/tickets/${parsed.data.ticketId}`)
+}
+
+export async function publishTicketAction(formData: FormData) {
+  const parsed = publishTicketSchema.safeParse({
+    ticketId: formData.get('ticketId'),
+  })
+  if (!parsed.success) redirect('/app/tickets')
+
+  const supabase = await createSupabaseServerClient()
+  const { data: claims } = await supabase.auth.getClaims()
+  if (!claims?.claims.sub) redirect('/auth/login')
+
+  const publishedAt = new Date()
+  const applicationsCloseAt = new Date(
+    publishedAt.getTime() + 7 * 24 * 60 * 60 * 1000,
+  )
+  const { data, error } = await supabase
+    .from('tickets')
+    .update({
+      status: 'published',
+      published_at: publishedAt.toISOString(),
+      applications_close_at: applicationsCloseAt.toISOString(),
+    })
+    .eq('id', parsed.data.ticketId)
+    .eq('status', 'new')
+    .is('deleted_at', null)
+    .select('id')
+    .maybeSingle()
+
+  if (error || !data)
+    redirect(`/app/tickets/${parsed.data.ticketId}?error=publish`)
+
+  revalidatePath('/app')
+  revalidatePath('/app/tickets')
+  revalidatePath(`/app/tickets/${parsed.data.ticketId}`)
+  redirect(`/app/tickets/${parsed.data.ticketId}`)
 }
