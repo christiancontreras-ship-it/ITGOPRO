@@ -1,5 +1,6 @@
+import Link from 'next/link'
+
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Container } from '@/components/layout/container'
 import { appConfig } from '@/config/app'
@@ -16,12 +17,9 @@ export default function HomePage() {
           <Badge>Base técnica inicializada</Badge>
           <h1 id="hero-title">Tecnología que avanza al ritmo de tu negocio.</h1>
           <p>{appConfig.description}</p>
-          <Button disabled aria-describedby="access-note">
-            Ingreso disponible próximamente
-          </Button>
-          <span id="access-note" className="sr-only">
-            La autenticación se implementará en una etapa futura.
-          </span>
+          <Link className="button" href="/auth/login">
+            Iniciar sesión
+          </Link>
         </section>
         <Card className="foundation-card">
           <div>
