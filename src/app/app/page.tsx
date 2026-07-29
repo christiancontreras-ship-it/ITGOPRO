@@ -1,13 +1,14 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Card } from '@/components/ui/card'
+import { getAuthenticatedHomeRoute } from '@/lib/auth/home-route'
 import { getCurrentAuthContext } from '@/services/auth.service'
 import { getTicketDashboard } from '@/services/ticket.service'
 
 export default async function AppHomePage() {
   const context = await getCurrentAuthContext()
   if (!context) redirect('/auth/login')
-  if (!context.memberships.length) redirect('/app/onboarding')
+  if (!context.memberships.length) redirect(getAuthenticatedHomeRoute(context))
   const membership = context.memberships[0]
   const company = membership?.companies
   const companyId = membership?.company_id

@@ -8,23 +8,33 @@ export async function getCurrentAuthContext() {
   if (error || !data?.claims.sub) return null
 
   const userId = data.claims.sub
-  const [{ data: profile }, { data: memberships }, { data: platformRoles }] =
-    await Promise.all([
-      supabase.from('profiles').select('*').eq('id', userId).maybeSingle(),
-      supabase
-        .from('company_memberships')
-        .select(
-          'id, company_id, status, companies(id, legal_name, trade_name), membership_roles(roles(code, name, scope_type))',
-        )
-        .eq('user_id', userId)
-        .eq('status', 'active')
-        .is('deleted_at', null),
-      supabase
-        .from('platform_user_roles')
-        .select('roles(code, name, scope_type)')
-        .eq('user_id', userId)
-        .is('revoked_at', null),
-    ])
+  const [
+    { data: profile },
+    { data: memberships },
+    { data: platformRoles },
+    { data: specialistProfile },
+  ] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', userId).maybeSingle(),
+    supabase
+      .from('company_memberships')
+      .select(
+        'id, company_id, status, companies(id, legal_name, trade_name), membership_roles(roles(code, name, scope_type))',
+      )
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .is('deleted_at', null),
+    supabase
+      .from('platform_user_roles')
+      .select('roles(code, name, scope_type)')
+      .eq('user_id', userId)
+      .is('revoked_at', null),
+    supabase
+      .from('specialist_profiles')
+      .select('id, approval_status')
+      .eq('user_id', userId)
+      .is('deleted_at', null)
+      .maybeSingle(),
+  ])
 
   return {
     userId,
@@ -32,5 +42,6 @@ export async function getCurrentAuthContext() {
     profile,
     memberships: memberships ?? [],
     platformRoles: platformRoles ?? [],
+    specialistProfile,
   }
 }

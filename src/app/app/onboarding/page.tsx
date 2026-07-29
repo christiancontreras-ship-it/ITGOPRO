@@ -1,12 +1,14 @@
 import { redirect } from 'next/navigation'
 import { CompanyOnboardingForm } from '@/components/company/company-onboarding-form'
 import { Card } from '@/components/ui/card'
+import { getAuthenticatedHomeRoute } from '@/lib/auth/home-route'
 import { getCurrentAuthContext } from '@/services/auth.service'
 
 export default async function CompanyOnboardingPage() {
   const context = await getCurrentAuthContext()
   if (!context) redirect('/auth/login')
-  if (context.memberships.length) redirect('/app')
+  const homeRoute = getAuthenticatedHomeRoute(context)
+  if (homeRoute !== '/app/onboarding') redirect(homeRoute)
   return (
     <main className="auth-shell">
       <Card className="auth-card">
