@@ -26,6 +26,18 @@ export async function listOwnApplications() {
   return data ?? []
 }
 
+export async function listOwnAssignments() {
+  const supabase = await createSupabaseServerClient()
+  const { data, error } = await supabase
+    .from('ticket_assignments')
+    .select(
+      'id,status,expires_at,accepted_at,started_at,tickets(code,title,status),ticket_applications(amount,currency_code,modality)',
+    )
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data ?? []
+}
+
 export async function listTicketCandidates(ticketId: string) {
   const supabase = await createSupabaseServerClient()
   const { data, error } = await supabase

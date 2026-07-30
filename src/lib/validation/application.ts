@@ -25,3 +25,17 @@ export type ApplicationActionState = {
   status: 'idle' | 'success' | 'error'
   message?: string
 }
+
+export const assignmentResponseSchema = z
+  .object({
+    assignmentId: z.string().uuid(),
+    decision: z.enum(['accept', 'reject']),
+    reason: z.string().trim().max(1000).optional(),
+  })
+  .strict()
+
+export const startAssignmentSchema = z
+  .object({
+    assignmentId: z.string().uuid(),
+  })
+  .strict()

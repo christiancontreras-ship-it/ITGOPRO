@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { ticketApplicationSchema } from '@/lib/validation/application'
+import {
+  assignmentResponseSchema,
+  startAssignmentSchema,
+  ticketApplicationSchema,
+} from '@/lib/validation/application'
 
 describe('ticketApplicationSchema', () => {
   it('acepta una propuesta coherente', () => {
@@ -34,5 +38,29 @@ describe('ticketApplicationSchema', () => {
         validUntil: new Date(Date.now() + 43_200_000),
       }).success,
     ).toBe(false)
+  })
+})
+
+describe('assignment schemas', () => {
+  const assignmentId = 'c1d6ec28-151f-4ee7-8ffc-99bce89fa9d3'
+
+  it('valida aceptar o rechazar una asignación', () => {
+    expect(
+      assignmentResponseSchema.safeParse({
+        assignmentId,
+        decision: 'accept',
+      }).success,
+    ).toBe(true)
+    expect(
+      assignmentResponseSchema.safeParse({
+        assignmentId,
+        decision: 'reject',
+        reason: 'No tengo disponibilidad.',
+      }).success,
+    ).toBe(true)
+  })
+
+  it('valida el inicio de un trabajo asignado', () => {
+    expect(startAssignmentSchema.safeParse({ assignmentId }).success).toBe(true)
   })
 })
