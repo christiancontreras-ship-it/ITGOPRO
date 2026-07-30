@@ -4205,6 +4205,17 @@ export type Database = {
         Args: { p_ticket_id: string }
         Returns: undefined
       }
+      submit_ticket_review: {
+        Args: {
+          p_comment?: string
+          p_communication_rating: number
+          p_is_public?: boolean
+          p_rating: number
+          p_technical_rating: number
+          p_ticket_id: string
+        }
+        Returns: string
+      }
       select_ticket_candidate: {
         Args: { p_application_id: string; p_ticket_id: string }
         Returns: string

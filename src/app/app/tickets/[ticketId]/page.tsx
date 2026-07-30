@@ -5,6 +5,7 @@ import {
   addTicketCommentAction,
   closeTicketAction,
   publishTicketAction,
+  submitTicketReviewAction,
 } from '@/app/app/tickets/actions'
 import { Card } from '@/components/ui/card'
 import { TicketChat } from '@/components/tickets/ticket-chat'
@@ -15,13 +16,14 @@ export default async function TicketDetailPage({
   searchParams,
 }: {
   params: Promise<{ ticketId: string }>
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; review?: string }>
 }) {
   const { ticketId } = await params
-  const { error } = await searchParams
+  const { error, review } = await searchParams
   const ticket = await getTicket(ticketId)
   if (!ticket) notFound()
   const latestAnalysis = ticket.ticket_ai_analyses[0]
+  const ticketReview = ticket.specialist_reviews
   const category =
     ticket.ticket_categories && !Array.isArray(ticket.ticket_categories)
       ? ticket.ticket_categories.name
@@ -39,6 +41,17 @@ export default async function TicketDetailPage({
       {error === 'close' && (
         <p className="form-message error" role="alert">
           No fue posible cerrar el ticket. Verifica que siga resuelto.
+        </p>
+      )}
+      {error === 'review' && (
+        <p className="form-message error" role="alert">
+          No fue posible guardar la evaluación. Comprueba que el ticket esté
+          cerrado y aún no haya sido evaluado.
+        </p>
+      )}
+      {review === 'success' && (
+        <p className="form-message success" role="status">
+          Evaluación enviada correctamente.
         </p>
       )}
       {ticket.status === 'new' && (
@@ -99,6 +112,50 @@ export default async function TicketDetailPage({
           </ol>
         </Card>
       </section>
+      {ticket.status === 'closed' && !ticketReview && (
+        <Card>
+          <p className="eyebrow">Servicio completado</p>
+          <h2>Califica al especialista</h2>
+          <p>
+            Tu evaluación actualiza su reputación y ayuda a otras empresas a
+            seleccionar especialistas.
+          </p>
+          <form action={submitTicketReviewAction} className="comment-form">
+            <input type="hidden" name="ticketId" value={ticket.id} />
+            <RatingField name="rating" label="Evaluación general" />
+            <RatingField name="technicalRating" label="Calidad técnica" />
+            <RatingField name="communicationRating" label="Comunicación" />
+            <label>
+              Comentario
+              <textarea
+                name="comment"
+                maxLength={2000}
+                placeholder="Describe brevemente tu experiencia"
+              />
+            </label>
+            <label>
+              <input name="isPublic" type="checkbox" defaultChecked /> Publicar
+              comentario en el perfil del especialista
+            </label>
+            <button className="button" type="submit">
+              Enviar evaluación
+            </button>
+          </form>
+        </Card>
+      )}
+      {ticketReview && (
+        <Card>
+          <p className="eyebrow">Evaluación enviada</p>
+          <h2>{'★'.repeat(ticketReview.rating)}</h2>
+          <dl>
+            <dt>Calidad técnica</dt>
+            <dd>{ticketReview.technical_rating}/5</dd>
+            <dt>Comunicación</dt>
+            <dd>{ticketReview.communication_rating}/5</dd>
+          </dl>
+          {ticketReview.comment && <p>{ticketReview.comment}</p>}
+        </Card>
+      )}
       <Card>
         <div className="dashboard-heading">
           <div>
@@ -158,6 +215,21 @@ export default async function TicketDetailPage({
         </Card>
       )}
     </main>
+  )
+}
+
+function RatingField({ name, label }: { name: string; label: string }) {
+  return (
+    <label>
+      {label}
+      <select name={name} defaultValue="5" required>
+        <option value="5">5 — Excelente</option>
+        <option value="4">4 — Muy bueno</option>
+        <option value="3">3 — Bueno</option>
+        <option value="2">2 — Regular</option>
+        <option value="1">1 — Deficiente</option>
+      </select>
+    </label>
   )
 }
 function ButtonLabel() {

@@ -9,6 +9,7 @@ import {
   publishTicketSchema,
   type TicketActionState,
   ticketCommentSchema,
+  ticketReviewSchema,
 } from '@/lib/validation/ticket'
 
 export async function createTicketAction(
@@ -116,4 +117,32 @@ export async function closeTicketAction(formData: FormData) {
   revalidatePath('/app/tickets')
   revalidatePath(`/app/tickets/${parsed.data.ticketId}`)
   redirect(`/app/tickets/${parsed.data.ticketId}`)
+}
+
+export async function submitTicketReviewAction(formData: FormData) {
+  const parsed = ticketReviewSchema.safeParse({
+    ticketId: formData.get('ticketId'),
+    rating: formData.get('rating'),
+    technicalRating: formData.get('technicalRating'),
+    communicationRating: formData.get('communicationRating'),
+    comment: formData.get('comment') ?? '',
+    isPublic: formData.get('isPublic') === 'on',
+  })
+  if (!parsed.success) redirect('/app/tickets')
+
+  const supabase = await createSupabaseServerClient()
+  const { error } = await supabase.rpc('submit_ticket_review', {
+    p_ticket_id: parsed.data.ticketId,
+    p_rating: parsed.data.rating,
+    p_technical_rating: parsed.data.technicalRating,
+    p_communication_rating: parsed.data.communicationRating,
+    p_comment: parsed.data.comment || undefined,
+    p_is_public: parsed.data.isPublic,
+  })
+  if (error) redirect(`/app/tickets/${parsed.data.ticketId}?error=review`)
+
+  revalidatePath('/app')
+  revalidatePath('/app/marketplace')
+  revalidatePath(`/app/tickets/${parsed.data.ticketId}`)
+  redirect(`/app/tickets/${parsed.data.ticketId}?review=success`)
 }

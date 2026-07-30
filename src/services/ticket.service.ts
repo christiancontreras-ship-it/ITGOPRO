@@ -34,7 +34,7 @@ export async function getTicket(ticketId: string) {
   const { data, error } = await supabase
     .from('tickets')
     .select(
-      '*,ticket_categories(name),ticket_status_history(*),ticket_comments(*),ticket_messages(id,body,sender_id,created_at),ticket_ai_analyses(*)',
+      '*,ticket_categories(name),ticket_status_history(*),ticket_comments(*),ticket_messages(id,body,sender_id,created_at),ticket_ai_analyses(*),specialist_reviews(rating,technical_rating,communication_rating,comment,is_public,created_at)',
     )
     .eq('id', ticketId)
     .single()
