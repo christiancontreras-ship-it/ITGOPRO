@@ -39,3 +39,10 @@ export const startAssignmentSchema = z
     assignmentId: z.string().uuid(),
   })
   .strict()
+
+export const resolveAssignmentSchema = z
+  .object({
+    ticketId: z.string().uuid(),
+    resolutionSummary: z.string().trim().min(20).max(5000),
+  })
+  .strict()

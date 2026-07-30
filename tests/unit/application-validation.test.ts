@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   assignmentResponseSchema,
+  resolveAssignmentSchema,
   startAssignmentSchema,
   ticketApplicationSchema,
 } from '@/lib/validation/application'
@@ -62,5 +63,21 @@ describe('assignment schemas', () => {
 
   it('valida el inicio de un trabajo asignado', () => {
     expect(startAssignmentSchema.safeParse({ assignmentId }).success).toBe(true)
+  })
+
+  it('exige un resumen suficiente para resolver', () => {
+    expect(
+      resolveAssignmentSchema.safeParse({
+        ticketId: assignmentId,
+        resolutionSummary:
+          'Se aplicó la actualización y se validó el reinicio del sistema.',
+      }).success,
+    ).toBe(true)
+    expect(
+      resolveAssignmentSchema.safeParse({
+        ticketId: assignmentId,
+        resolutionSummary: 'Listo',
+      }).success,
+    ).toBe(false)
   })
 })

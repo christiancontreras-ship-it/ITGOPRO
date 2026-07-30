@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { analyzeTicketAction } from './ai-actions'
 import {
   addTicketCommentAction,
+  closeTicketAction,
   publishTicketAction,
 } from '@/app/app/tickets/actions'
 import { Card } from '@/components/ui/card'
@@ -35,6 +36,11 @@ export default async function TicketDetailPage({
           nuevamente.
         </p>
       )}
+      {error === 'close' && (
+        <p className="form-message error" role="alert">
+          No fue posible cerrar el ticket. Verifica que siga resuelto.
+        </p>
+      )}
       {ticket.status === 'new' && (
         <form action={publishTicketAction}>
           <input type="hidden" name="ticketId" value={ticket.id} />
@@ -47,6 +53,14 @@ export default async function TicketDetailPage({
         <Link className="button" href={`/app/tickets/${ticket.id}/candidates`}>
           Revisar candidatos
         </Link>
+      )}
+      {ticket.status === 'resolved' && (
+        <form action={closeTicketAction}>
+          <input type="hidden" name="ticketId" value={ticket.id} />
+          <button className="button" type="submit">
+            Confirmar cierre
+          </button>
+        </form>
       )}
       <section className="ticket-detail-grid">
         <Card>
@@ -64,6 +78,12 @@ export default async function TicketDetailPage({
           </dl>
           <h2>Descripción</h2>
           <p className="preserve-lines">{ticket.description}</p>
+          {ticket.resolution_summary && (
+            <>
+              <h2>Resolución informada</h2>
+              <p className="preserve-lines">{ticket.resolution_summary}</p>
+            </>
+          )}
         </Card>
         <Card>
           <h2>Historial</h2>

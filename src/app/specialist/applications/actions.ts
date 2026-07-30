@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import {
   assignmentResponseSchema,
+  resolveAssignmentSchema,
   startAssignmentSchema,
 } from '@/lib/validation/application'
 
@@ -42,4 +43,23 @@ export async function startAssignmentAction(formData: FormData) {
 
   revalidatePath('/specialist')
   revalidatePath('/specialist/applications')
+}
+
+export async function resolveAssignmentAction(formData: FormData) {
+  const parsed = resolveAssignmentSchema.safeParse({
+    ticketId: formData.get('ticketId'),
+    resolutionSummary: formData.get('resolutionSummary'),
+  })
+  if (!parsed.success) throw new Error('El resumen de resolución es inválido.')
+
+  const supabase = await createSupabaseServerClient()
+  const { error } = await supabase.rpc('resolve_ticket_work', {
+    p_ticket_id: parsed.data.ticketId,
+    p_resolution_summary: parsed.data.resolutionSummary,
+  })
+  if (error) throw new Error('No fue posible marcar el ticket como resuelto.')
+
+  revalidatePath('/specialist')
+  revalidatePath('/specialist/applications')
+  revalidatePath(`/app/tickets/${parsed.data.ticketId}`)
 }

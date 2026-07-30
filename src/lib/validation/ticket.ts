@@ -14,4 +14,5 @@ export const ticketCommentSchema = z
   .object({ ticketId: z.uuid(), body: z.string().trim().min(1).max(5000) })
   .strict()
 export const publishTicketSchema = z.object({ ticketId: z.uuid() }).strict()
+export const closeTicketSchema = z.object({ ticketId: z.uuid() }).strict()
 export type TicketActionState = { status: 'idle' | 'error'; message?: string }

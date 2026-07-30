@@ -3979,6 +3979,7 @@ export type Database = {
           region_id: string | null
           requester_id: string
           resolution_due_at: string
+          resolution_summary: string | null
           resolved_at: string | null
           response_due_at: string
           status: string
@@ -4006,6 +4007,7 @@ export type Database = {
           region_id?: string | null
           requester_id: string
           resolution_due_at?: string
+          resolution_summary?: string | null
           resolved_at?: string | null
           response_due_at?: string
           status?: string
@@ -4033,6 +4035,7 @@ export type Database = {
           region_id?: string | null
           requester_id?: string
           resolution_due_at?: string
+          resolution_summary?: string | null
           resolved_at?: string | null
           response_due_at?: string
           status?: string
@@ -4192,6 +4195,14 @@ export type Database = {
       }
       respond_ticket_assignment: {
         Args: { p_accept: boolean; p_assignment_id: string; p_reason?: string }
+        Returns: undefined
+      }
+      resolve_ticket_work: {
+        Args: { p_resolution_summary: string; p_ticket_id: string }
+        Returns: undefined
+      }
+      close_resolved_ticket: {
+        Args: { p_ticket_id: string }
         Returns: undefined
       }
       select_ticket_candidate: {

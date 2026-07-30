@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import {
+  closeTicketSchema,
   createTicketSchema,
   publishTicketSchema,
   type TicketActionState,
@@ -92,6 +93,24 @@ export async function publishTicketAction(formData: FormData) {
 
   if (error || !data)
     redirect(`/app/tickets/${parsed.data.ticketId}?error=publish`)
+
+  revalidatePath('/app')
+  revalidatePath('/app/tickets')
+  revalidatePath(`/app/tickets/${parsed.data.ticketId}`)
+  redirect(`/app/tickets/${parsed.data.ticketId}`)
+}
+
+export async function closeTicketAction(formData: FormData) {
+  const parsed = closeTicketSchema.safeParse({
+    ticketId: formData.get('ticketId'),
+  })
+  if (!parsed.success) redirect('/app/tickets')
+
+  const supabase = await createSupabaseServerClient()
+  const { error } = await supabase.rpc('close_resolved_ticket', {
+    p_ticket_id: parsed.data.ticketId,
+  })
+  if (error) redirect(`/app/tickets/${parsed.data.ticketId}?error=close`)
 
   revalidatePath('/app')
   revalidatePath('/app/tickets')

@@ -1,4 +1,8 @@
-import { respondAssignmentAction, startAssignmentAction } from './actions'
+import {
+  resolveAssignmentAction,
+  respondAssignmentAction,
+  startAssignmentAction,
+} from './actions'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
@@ -63,6 +67,28 @@ export default async function ApplicationsPage() {
                       value={assignment.id}
                     />
                     <Button type="submit">Iniciar trabajo</Button>
+                  </form>
+                )}
+                {assignment.status === 'started' && (
+                  <form
+                    action={resolveAssignmentAction}
+                    className="comment-form"
+                  >
+                    <input
+                      type="hidden"
+                      name="ticketId"
+                      value={assignment.ticket_id}
+                    />
+                    <label>
+                      Resumen de la solución
+                      <textarea
+                        name="resolutionSummary"
+                        minLength={20}
+                        maxLength={5000}
+                        required
+                      />
+                    </label>
+                    <Button type="submit">Marcar como resuelto</Button>
                   </form>
                 )}
               </article>

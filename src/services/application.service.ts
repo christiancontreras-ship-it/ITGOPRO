@@ -31,7 +31,7 @@ export async function listOwnAssignments() {
   const { data, error } = await supabase
     .from('ticket_assignments')
     .select(
-      'id,status,expires_at,accepted_at,started_at,tickets(code,title,status),ticket_applications(amount,currency_code,modality)',
+      'id,ticket_id,status,expires_at,accepted_at,started_at,tickets(code,title,status),ticket_applications(amount,currency_code,modality)',
     )
     .order('created_at', { ascending: false })
   if (error) throw error
