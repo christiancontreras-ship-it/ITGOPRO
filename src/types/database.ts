@@ -4178,6 +4178,19 @@ export type Database = {
         }
         Returns: string
       }
+      initialize_mercadopago_ticket_payment: {
+        Args: { p_ticket_id: string }
+        Returns: { payment_id: string; amount: number; currency_code: string }[]
+      }
+      finalize_mercadopago_ticket_payment: {
+        Args: {
+          p_amount: number
+          p_payment_id: string
+          p_provider_reference: string
+          p_provider_status: string
+        }
+        Returns: undefined
+      }
       create_ticket_from_critical_alert: {
         Args: { p_alert_id: string }
         Returns: string
