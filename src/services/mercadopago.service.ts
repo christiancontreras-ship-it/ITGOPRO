@@ -21,7 +21,24 @@ async function mercadoPagoFetch<T>(
     },
     cache: 'no-store',
   })
-  if (!response.ok) throw new Error(`Mercado Pago respondió ${response.status}`)
+  if (!response.ok) {
+    const responseBody = await response.text()
+    let providerMessage = 'Respuesta sin detalle'
+
+    try {
+      const parsed = JSON.parse(responseBody) as {
+        error?: string
+        message?: string
+      }
+      providerMessage = parsed.message ?? parsed.error ?? providerMessage
+    } catch {
+      // Avoid logging arbitrary provider HTML or response bodies.
+    }
+
+    throw new Error(
+      `Mercado Pago request failed: status=${response.status} message=${providerMessage}`,
+    )
+  }
   return response.json() as Promise<T>
 }
 

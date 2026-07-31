@@ -36,6 +36,10 @@ export async function startMercadoPagoCheckoutAction(formData: FormData) {
     redirect(checkoutUrl)
   } catch (error) {
     if (error && typeof error === 'object' && 'digest' in error) throw error
+    console.error('[mercadopago] checkout preference creation failed', {
+      ticketId,
+      message: error instanceof Error ? error.message : 'Unknown provider error',
+    })
     redirect('/app/billing?payment=provider_error')
   }
 }
