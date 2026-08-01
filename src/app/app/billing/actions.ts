@@ -38,7 +38,7 @@ export async function startMercadoPagoCheckoutAction(formData: FormData) {
     if (error && typeof error === 'object' && 'digest' in error) throw error
     console.error(
       error instanceof Error
-        ? error.message
+        ? error.message.replace(/^.*message=/, '')
         : 'Mercado Pago request failed: unknown provider error',
     )
     redirect('/app/billing?payment=provider_error')
