@@ -49,6 +49,10 @@ export async function createCheckoutPreference(input: {
   amount: number
 }) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.itgopro.cl'
+  const returnUrl = new URL(
+    '/api/payments/mercadopago/return',
+    baseUrl,
+  ).toString()
   return mercadoPagoFetch<{
     id: string
     init_point: string
@@ -68,9 +72,9 @@ export async function createCheckoutPreference(input: {
       ],
       external_reference: input.paymentId,
       back_urls: {
-        success: `${baseUrl}/api/payments/mercadopago/return`,
-        pending: `${baseUrl}/api/payments/mercadopago/return`,
-        failure: `${baseUrl}/api/payments/mercadopago/return`,
+        success: returnUrl,
+        pending: returnUrl,
+        failure: returnUrl,
       },
       auto_return: 'approved',
     }),
