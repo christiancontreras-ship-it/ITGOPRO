@@ -56,9 +56,7 @@ export async function createCheckoutPreference(input: {
     .replace(/\/+$/, '')
   const returnUrl = new URL(
     '/api/payments/mercadopago/return',
-    /^https?:\/\//i.test(baseUrl)
-      ? baseUrl
-      : 'https://www.itgopro.cl',
+    /^https?:\/\//i.test(baseUrl) ? baseUrl : 'https://www.itgopro.cl',
   ).toString()
   return mercadoPagoFetch<{
     id: string

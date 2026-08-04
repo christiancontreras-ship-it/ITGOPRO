@@ -29,10 +29,9 @@ export async function startMercadoPagoCheckoutAction(formData: FormData) {
       title: ticket.title,
       amount: Number(payment.amount),
     })
-    const checkoutUrl =
-      process.env.MERCADOPAGO_MODE === 'test'
-        ? preference.sandbox_init_point
-        : preference.init_point
+    // Checkout Pro test payments are isolated by the test credentials and users.
+    // The legacy sandbox URL can enter a redirect loop during buyer authentication.
+    const checkoutUrl = preference.init_point
     redirect(checkoutUrl)
   } catch (error) {
     if (error && typeof error === 'object' && 'digest' in error) throw error
