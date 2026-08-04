@@ -1,5 +1,8 @@
 import { Card } from '@/components/ui/card'
-import { startMercadoPagoCheckoutAction } from './actions'
+import {
+  reconcileMercadoPagoPaymentAction,
+  startMercadoPagoCheckoutAction,
+} from './actions'
 import { getCurrentAuthContext } from '@/services/auth.service'
 import {
   getCompanyBilling,
@@ -49,12 +52,33 @@ export default async function BillingPage({
                   {Number(ticket.final_cost).toLocaleString('es-CL')}
                 </p>
               </div>
-              <form action={startMercadoPagoCheckoutAction}>
-                <input type="hidden" name="ticketId" value={ticket.id} />
-                <button className="button" type="submit">
-                  Pagar con Mercado Pago
-                </button>
-              </form>
+              {ticket.payments.some(
+                (item) =>
+                  item.provider === 'mercado_pago' &&
+                  ['pending', 'authorized'].includes(item.status),
+              ) ? (
+                <form action={reconcileMercadoPagoPaymentAction}>
+                  <input
+                    type="hidden"
+                    name="paymentId"
+                    value={
+                      ticket.payments.find(
+                        (item) => item.provider === 'mercado_pago',
+                      )?.id
+                    }
+                  />
+                  <button className="button" type="submit">
+                    Verificar pago
+                  </button>
+                </form>
+              ) : (
+                <form action={startMercadoPagoCheckoutAction}>
+                  <input type="hidden" name="ticketId" value={ticket.id} />
+                  <button className="button" type="submit">
+                    Pagar con Mercado Pago
+                  </button>
+                </form>
+              )}
             </div>
           ))
         )}

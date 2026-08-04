@@ -94,3 +94,20 @@ export async function getMercadoPagoPayment(paymentId: string) {
     external_reference: string | null
   }>(`/v1/payments/${encodeURIComponent(paymentId)}`)
 }
+
+export async function findMercadoPagoPayments(externalReference: string) {
+  const search = new URLSearchParams({
+    external_reference: externalReference,
+    sort: 'date_created',
+    criteria: 'desc',
+  })
+
+  return mercadoPagoFetch<{
+    results: Array<{
+      id: number
+      status: string
+      transaction_amount: number
+      external_reference: string | null
+    }>
+  }>(`/v1/payments/search?${search.toString()}`)
+}

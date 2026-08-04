@@ -28,7 +28,11 @@ export async function GET(request: NextRequest) {
         ? 'success'
         : providerPayment.status,
     )
-  } catch {
+  } catch (error) {
+    console.error('[mercadopago:return] verification failed', {
+      providerPaymentId,
+      error: error instanceof Error ? error.message : 'unknown_error',
+    })
     destination.searchParams.set('payment', 'verification_error')
   }
   return NextResponse.redirect(destination)
