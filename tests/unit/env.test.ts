@@ -1,4 +1,8 @@
-import { parsePublicEnv, parseServerEnv } from '@/config/env'
+import {
+  parsePublicEnv,
+  parseServerEnv,
+  parseSupabaseAdminEnv,
+} from '@/config/env'
 
 const valid = {
   NEXT_PUBLIC_APP_URL: 'http://localhost:3000',
@@ -11,4 +15,14 @@ describe('environment validation', () => {
     expect(parsePublicEnv(valid)).toEqual(valid))
   it('rechaza secretos incompletos del servidor', () =>
     expect(() => parseServerEnv(valid)).toThrow(/inválida/i))
+  it('valida Supabase admin sin exigir integraciones no relacionadas', () =>
+    expect(
+      parseSupabaseAdminEnv({
+        NEXT_PUBLIC_SUPABASE_URL: valid.NEXT_PUBLIC_SUPABASE_URL,
+        SUPABASE_SERVICE_ROLE_KEY: 'service-role',
+      }),
+    ).toEqual({
+      NEXT_PUBLIC_SUPABASE_URL: valid.NEXT_PUBLIC_SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY: 'service-role',
+    }))
 })

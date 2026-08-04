@@ -14,8 +14,14 @@ const serverEnvSchema = publicEnvSchema.extend({
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']),
 })
 
+const supabaseAdminEnvSchema = z.object({
+  NEXT_PUBLIC_SUPABASE_URL: z.url(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+})
+
 export type PublicEnv = z.infer<typeof publicEnvSchema>
 export type ServerEnv = z.infer<typeof serverEnvSchema>
+export type SupabaseAdminEnv = z.infer<typeof supabaseAdminEnvSchema>
 
 function formatEnvError(error: z.ZodError): Error {
   const fields = error.issues.map((issue) => issue.path.join('.')).join(', ')
@@ -48,4 +54,19 @@ export function getPublicEnv(): PublicEnv {
 
 export function getServerEnv(): ServerEnv {
   return parseServerEnv(process.env)
+}
+
+export function parseSupabaseAdminEnv(
+  input: Record<string, string | undefined>,
+): SupabaseAdminEnv {
+  const result = supabaseAdminEnvSchema.safeParse(input)
+  if (!result.success) throw formatEnvError(result.error)
+  return result.data
+}
+
+export function getSupabaseAdminEnv(): SupabaseAdminEnv {
+  return parseSupabaseAdminEnv({
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  })
 }
