@@ -15,10 +15,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      approve_specialist_payout: {
-        Args: { p_payout_id: string }
-        Returns: undefined
-      }
       graphql: {
         Args: {
           extensions?: Json
@@ -4298,6 +4294,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_specialist_payout: {
+        Args: { p_payout_id: string }
+        Returns: undefined
+      }
       create_company_with_owner: {
         Args: { legal_name: string; tax_id?: string; trade_name?: string }
         Returns: string
