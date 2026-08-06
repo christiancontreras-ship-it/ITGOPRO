@@ -21,6 +21,11 @@ export default async function PrivateLayout({
           <Link href="/app/tickets">Tickets</Link>
           <Link href="/app/marketplace">Especialistas</Link>
           <Link href="/app/billing">Pagos</Link>
+          {context.platformRoles.some((entry) =>
+            ['platform_super_admin', 'platform_admin'].includes(
+              entry.roles?.code ?? '',
+            ),
+          ) && <Link href="/app/finance/payouts">Liquidaciones</Link>}
           <Link href="/app/managed-services">Servicios</Link>
           <Link href="/app/monitoring">Monitoreo</Link>
           <Link href="/partner">Partner</Link>

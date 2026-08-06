@@ -58,6 +58,10 @@ export async function createCheckoutPreference(input: {
     '/api/payments/mercadopago/return',
     /^https?:\/\//i.test(baseUrl) ? baseUrl : 'https://www.itgopro.cl',
   ).toString()
+  const notificationUrl = new URL(
+    '/api/payments/mercadopago/webhook',
+    /^https?:\/\//i.test(baseUrl) ? baseUrl : 'https://www.itgopro.cl',
+  ).toString()
   return mercadoPagoFetch<{
     id: string
     init_point: string
@@ -82,6 +86,7 @@ export async function createCheckoutPreference(input: {
         failure: returnUrl,
       },
       auto_return: 'approved',
+      notification_url: notificationUrl,
     }),
   })
 }

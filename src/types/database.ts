@@ -15,6 +15,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_specialist_payout: {
+        Args: { p_payout_id: string }
+        Returns: undefined
+      }
       graphql: {
         Args: {
           extensions?: Json
@@ -2010,6 +2014,51 @@ export type Database = {
           },
         ]
       }
+      payment_webhook_events: {
+        Row: {
+          id: string
+          provider: string
+          request_id: string
+          provider_resource_id: string | null
+          event_type: string | null
+          action: string | null
+          signature_valid: boolean
+          status: string
+          error_code: string | null
+          payload: Json
+          received_at: string
+          processed_at: string | null
+        }
+        Insert: {
+          id?: string
+          provider: string
+          request_id: string
+          provider_resource_id?: string | null
+          event_type?: string | null
+          action?: string | null
+          signature_valid?: boolean
+          status?: string
+          error_code?: string | null
+          payload?: Json
+          received_at?: string
+          processed_at?: string | null
+        }
+        Update: {
+          id?: string
+          provider?: string
+          request_id?: string
+          provider_resource_id?: string | null
+          event_type?: string | null
+          action?: string | null
+          signature_valid?: boolean
+          status?: string
+          error_code?: string | null
+          payload?: Json
+          received_at?: string
+          processed_at?: string | null
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -2956,6 +3005,90 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
+      }
+      specialist_payout_items: {
+        Row: {
+          id: string
+          payout_id: string
+          commission_id: string
+          amount: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          payout_id: string
+          commission_id: string
+          amount: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          payout_id?: string
+          commission_id?: string
+          amount?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
+      specialist_payouts: {
+        Row: {
+          id: string
+          specialist_id: string
+          currency_code: string
+          amount: number
+          status: string
+          idempotency_key: string
+          bank_reference: string | null
+          proof_reference: string | null
+          notes: string | null
+          requested_by: string
+          approved_by: string | null
+          paid_by: string | null
+          requested_at: string
+          approved_at: string | null
+          paid_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          specialist_id: string
+          currency_code?: string
+          amount: number
+          status?: string
+          idempotency_key: string
+          bank_reference?: string | null
+          proof_reference?: string | null
+          notes?: string | null
+          requested_by: string
+          approved_by?: string | null
+          paid_by?: string | null
+          requested_at?: string
+          approved_at?: string | null
+          paid_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          specialist_id?: string
+          currency_code?: string
+          amount?: number
+          status?: string
+          idempotency_key?: string
+          bank_reference?: string | null
+          proof_reference?: string | null
+          notes?: string | null
+          requested_by?: string
+          approved_by?: string | null
+          paid_by?: string | null
+          requested_at?: string
+          approved_at?: string | null
+          paid_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       specialist_profiles: {
         Row: {
@@ -4190,6 +4323,18 @@ export type Database = {
           p_provider_status: string
         }
         Returns: undefined
+      }
+      record_specialist_payout_transfer: {
+        Args: {
+          p_bank_reference: string
+          p_payout_id: string
+          p_proof_reference?: string
+        }
+        Returns: undefined
+      }
+      request_specialist_payout: {
+        Args: { p_idempotency_key: string }
+        Returns: string
       }
       create_ticket_from_critical_alert: {
         Args: { p_alert_id: string }
