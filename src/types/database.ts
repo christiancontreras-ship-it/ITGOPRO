@@ -3084,7 +3084,15 @@ export type Database = {
           created_at?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'specialist_payouts_specialist_id_fkey'
+            columns: ['specialist_id']
+            isOneToOne: false
+            referencedRelation: 'specialist_profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       specialist_profiles: {
         Row: {
