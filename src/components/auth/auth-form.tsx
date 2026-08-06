@@ -22,6 +22,28 @@ export function AuthForm({ action, mode }: AuthFormProps) {
     <form action={formAction} className="auth-form">
       {mode === 'register' && (
         <>
+          <fieldset className="account-type-selector">
+            <legend>¿Cómo quieres usar ITGO?</legend>
+            <label>
+              <input name="accountType" type="radio" value="company" required />
+              <span>
+                <strong>Empresa</strong>
+                <small>Solicitar servicios TI y contratar especialistas.</small>
+              </span>
+            </label>
+            <label>
+              <input
+                name="accountType"
+                type="radio"
+                value="specialist"
+                required
+              />
+              <span>
+                <strong>Especialista TI</strong>
+                <small>Ofrecer servicios y postular a oportunidades.</small>
+              </span>
+            </label>
+          </fieldset>
           <label>
             Nombre
             <input name="firstName" autoComplete="given-name" required />

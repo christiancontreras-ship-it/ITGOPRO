@@ -1,26 +1,26 @@
 import { redirect } from 'next/navigation'
 
-import { AccountTypeForm } from '@/components/auth/account-type-form'
+import { CompanyOnboardingForm } from '@/components/company/company-onboarding-form'
 import { Card } from '@/components/ui/card'
 import { getAuthenticatedHomeRoute } from '@/lib/auth/home-route'
 import { getCurrentAuthContext } from '@/services/auth.service'
 
-export default async function AccountTypeOnboardingPage() {
+export default async function CompanyOnboardingPage() {
   const context = await getCurrentAuthContext()
   if (!context) redirect('/auth/login')
 
   const homeRoute = getAuthenticatedHomeRoute(context)
-  if (homeRoute !== '/app/onboarding') redirect(homeRoute)
+  if (homeRoute !== '/app/onboarding/company') redirect(homeRoute)
 
   return (
     <main className="auth-shell">
       <Card className="auth-card">
         <span className="logo">ITGO</span>
-        <h1>¿Cómo quieres usar ITGO?</h1>
+        <h1>Configura tu empresa</h1>
         <p>
-          Selecciona el tipo de cuenta para mostrarte solo lo que necesitas.
+          Estos datos crean el espacio privado y te asignan como propietario.
         </p>
-        <AccountTypeForm />
+        <CompanyOnboardingForm />
       </Card>
     </main>
   )

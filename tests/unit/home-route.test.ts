@@ -7,6 +7,7 @@ describe('getAuthenticatedHomeRoute', () => {
     expect(
       getAuthenticatedHomeRoute({
         memberships: [{ id: 'membership' }],
+        profile: { account_type: 'specialist' },
         specialistProfile: { approval_status: 'approved' },
       }),
     ).toBe('/app')
@@ -16,15 +17,37 @@ describe('getAuthenticatedHomeRoute', () => {
     expect(
       getAuthenticatedHomeRoute({
         memberships: [],
+        profile: { account_type: 'specialist' },
         specialistProfile: { approval_status: 'approved' },
       }),
     ).toBe('/specialist')
   })
 
-  it('keeps users without a company or specialist profile in onboarding', () => {
+  it('routes a new specialist to professional profile setup', () => {
     expect(
       getAuthenticatedHomeRoute({
         memberships: [],
+        profile: { account_type: 'specialist' },
+        specialistProfile: null,
+      }),
+    ).toBe('/specialist/profile')
+  })
+
+  it('routes a new company account to company setup', () => {
+    expect(
+      getAuthenticatedHomeRoute({
+        memberships: [],
+        profile: { account_type: 'company' },
+        specialistProfile: null,
+      }),
+    ).toBe('/app/onboarding/company')
+  })
+
+  it('asks legacy users without a type to choose one', () => {
+    expect(
+      getAuthenticatedHomeRoute({
+        memberships: [],
+        profile: { account_type: null },
         specialistProfile: null,
       }),
     ).toBe('/app/onboarding')

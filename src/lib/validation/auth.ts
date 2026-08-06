@@ -15,6 +15,9 @@ export const loginSchema = z
 
 export const registerSchema = z
   .object({
+    accountType: z.enum(['company', 'specialist'], {
+      message: 'Selecciona si te registras como empresa o especialista TI.',
+    }),
     email,
     password,
     confirmPassword: z.string(),
@@ -41,3 +44,6 @@ export type AuthActionState = {
   status: 'idle' | 'success' | 'error'
   message?: string
 }
+
+export const accountTypeSchema = z.enum(['company', 'specialist'])
+export type AccountType = z.infer<typeof accountTypeSchema>

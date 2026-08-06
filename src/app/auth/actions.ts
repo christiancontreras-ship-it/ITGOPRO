@@ -36,6 +36,7 @@ export async function registerAction(
   formData: FormData,
 ): Promise<AuthActionState> {
   const parsed = registerSchema.safeParse({
+    accountType: formData.get('accountType'),
     email: formData.get('email'),
     password: formData.get('password'),
     confirmPassword: formData.get('confirmPassword'),
@@ -53,6 +54,7 @@ export async function registerAction(
     password: parsed.data.password,
     options: {
       data: {
+        account_type: parsed.data.accountType,
         first_name: parsed.data.firstName,
         last_name: parsed.data.lastName,
       },

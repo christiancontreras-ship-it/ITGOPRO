@@ -17,6 +17,7 @@ describe('validación de autenticación', () => {
 
   it('exige una contraseña robusta y confirmada al registrar', () => {
     const weak = registerSchema.safeParse({
+      accountType: 'company',
       email: 'user@example.com',
       password: 'débil',
       confirmPassword: 'débil',
@@ -24,6 +25,7 @@ describe('validación de autenticación', () => {
       lastName: 'Pérez',
     })
     const mismatch = registerSchema.safeParse({
+      accountType: 'specialist',
       email: 'user@example.com',
       password: 'ClaveSegura123',
       confirmPassword: 'OtraClave123',
@@ -32,6 +34,25 @@ describe('validación de autenticación', () => {
     })
     expect(weak.success).toBe(false)
     expect(mismatch.success).toBe(false)
+  })
+
+  it('exige un tipo de cuenta válido al registrar', () => {
+    const base = {
+      email: 'user@example.com',
+      password: 'ClaveSegura123',
+      confirmPassword: 'ClaveSegura123',
+      firstName: 'Ana',
+      lastName: 'Pérez',
+    }
+    expect(
+      registerSchema.safeParse({ ...base, accountType: 'company' }).success,
+    ).toBe(true)
+    expect(
+      registerSchema.safeParse({ ...base, accountType: 'specialist' }).success,
+    ).toBe(true)
+    expect(
+      registerSchema.safeParse({ ...base, accountType: 'otro' }).success,
+    ).toBe(false)
   })
 
   it('acepta recuperación únicamente con correo válido', () => {
