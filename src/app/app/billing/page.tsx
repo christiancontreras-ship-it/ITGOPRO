@@ -1,7 +1,9 @@
 import { Card } from '@/components/ui/card'
 import {
   reconcileMercadoPagoPaymentAction,
+  reconcileTransbankPaymentAction,
   startMercadoPagoCheckoutAction,
+  startTransbankCheckoutAction,
 } from './actions'
 import { getCurrentAuthContext } from '@/services/auth.service'
 import {
@@ -52,33 +54,62 @@ export default async function BillingPage({
                   {Number(ticket.final_cost).toLocaleString('es-CL')}
                 </p>
               </div>
-              {ticket.payments.some(
-                (item) =>
-                  item.provider === 'mercado_pago' &&
-                  ['pending', 'authorized'].includes(item.status),
-              ) ? (
-                <form action={reconcileMercadoPagoPaymentAction}>
-                  <input
-                    type="hidden"
-                    name="paymentId"
-                    value={
-                      ticket.payments.find(
-                        (item) => item.provider === 'mercado_pago',
-                      )?.id
-                    }
-                  />
-                  <button className="button" type="submit">
-                    Verificar pago
-                  </button>
-                </form>
-              ) : (
-                <form action={startMercadoPagoCheckoutAction}>
-                  <input type="hidden" name="ticketId" value={ticket.id} />
-                  <button className="button" type="submit">
-                    Pagar con Mercado Pago
-                  </button>
-                </form>
-              )}
+              <div className="button-row">
+                {ticket.payments.some(
+                  (item) =>
+                    item.provider === 'mercado_pago' &&
+                    ['pending', 'authorized'].includes(item.status),
+                ) ? (
+                  <form action={reconcileMercadoPagoPaymentAction}>
+                    <input
+                      type="hidden"
+                      name="paymentId"
+                      value={
+                        ticket.payments.find(
+                          (item) => item.provider === 'mercado_pago',
+                        )?.id
+                      }
+                    />
+                    <button className="button" type="submit">
+                      Verificar pago
+                    </button>
+                  </form>
+                ) : (
+                  <form action={startMercadoPagoCheckoutAction}>
+                    <input type="hidden" name="ticketId" value={ticket.id} />
+                    <button className="button" type="submit">
+                      Pagar con Mercado Pago
+                    </button>
+                  </form>
+                )}
+                {ticket.payments.some(
+                  (item) =>
+                    item.provider === 'transbank' &&
+                    ['pending', 'authorized'].includes(item.status),
+                ) ? (
+                  <form action={reconcileTransbankPaymentAction}>
+                    <input
+                      type="hidden"
+                      name="paymentId"
+                      value={
+                        ticket.payments.find(
+                          (item) => item.provider === 'transbank',
+                        )?.id
+                      }
+                    />
+                    <button className="button secondary" type="submit">
+                      Verificar Transbank
+                    </button>
+                  </form>
+                ) : (
+                  <form action={startTransbankCheckoutAction}>
+                    <input type="hidden" name="ticketId" value={ticket.id} />
+                    <button className="button secondary" type="submit">
+                      Pagar con Webpay
+                    </button>
+                  </form>
+                )}
+              </div>
             </div>
           ))
         )}
