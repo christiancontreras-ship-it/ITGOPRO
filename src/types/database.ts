@@ -2067,6 +2067,8 @@ export type Database = {
           id: string
           idempotency_key: string
           provider: string
+          provider_buy_order: string | null
+          provider_redirect_url: string | null
           provider_reference: string | null
           status: string
           ticket_id: string | null
@@ -2083,6 +2085,8 @@ export type Database = {
           id?: string
           idempotency_key: string
           provider: string
+          provider_buy_order?: string | null
+          provider_redirect_url?: string | null
           provider_reference?: string | null
           status?: string
           ticket_id?: string | null
@@ -2099,6 +2103,8 @@ export type Database = {
           id?: string
           idempotency_key?: string
           provider?: string
+          provider_buy_order?: string | null
+          provider_redirect_url?: string | null
           provider_reference?: string | null
           status?: string
           ticket_id?: string | null
@@ -4325,6 +4331,21 @@ export type Database = {
       initialize_mercadopago_ticket_payment: {
         Args: { p_ticket_id: string }
         Returns: { payment_id: string; amount: number; currency_code: string }[]
+      }
+      initialize_transbank_ticket_payment: {
+        Args: { p_ticket_id: string }
+        Returns: { payment_id: string; amount: number; currency_code: string }[]
+      }
+      finalize_transbank_ticket_payment: {
+        Args: {
+          p_amount: number
+          p_buy_order: string
+          p_payment_id: string
+          p_provider_reference: string
+          p_provider_status: string
+          p_response_code: number
+        }
+        Returns: undefined
       }
       finalize_mercadopago_ticket_payment: {
         Args: {
