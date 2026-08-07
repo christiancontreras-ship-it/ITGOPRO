@@ -168,17 +168,25 @@ export default async function BillingPage({
             <h2>{plan.name}</h2>
             <strong>CLP {plan.price.toLocaleString('es-CL')}</strong>
             {plan.code !== 'company_free' &&
-              subscription?.plan_id !== plan.id && (
+              (subscription?.plan_id !== plan.id ||
+                subscription.status === 'pending') && (
                 <form action={startCompanySubscriptionAction}>
                   <input type="hidden" name="planId" value={plan.id} />
                   <button className="button" type="submit">
-                    Contratar mensualmente
+                    {subscription?.plan_id === plan.id
+                      ? 'Reintentar activación'
+                      : 'Contratar mensualmente'}
                   </button>
                 </form>
               )}
-            {subscription?.plan_id === plan.id && (
-              <p className="form-message success">Plan seleccionado</p>
-            )}
+            {subscription?.plan_id === plan.id &&
+              subscription.status === 'authorized' && (
+                <p className="form-message success">Plan activo</p>
+              )}
+            {subscription?.plan_id === plan.id &&
+              subscription.status === 'paused' && (
+                <p className="form-message">Plan pausado</p>
+              )}
             <p>Comisión {plan.commission_percent}%</p>
           </Card>
         ))}
