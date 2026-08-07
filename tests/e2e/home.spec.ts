@@ -9,7 +9,7 @@ test('la portada permite acceder al inicio de sesión', async ({ page }) => {
   await page.getByRole('link', { name: /iniciar sesión/i }).click()
   await expect(page).toHaveURL(/\/auth\/login$/)
   await expect(
-    page.getByRole('heading', { name: /iniciar sesión/i }),
+    page.getByRole('heading', { name: /ingresa a tu cuenta/i }),
   ).toBeVisible()
   expect(errors).toEqual([])
 })
