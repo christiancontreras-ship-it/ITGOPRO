@@ -1,5 +1,7 @@
 import 'server-only'
 
+import { resolveSubscriptionPayerEmail } from '@/lib/payments/mercadopago'
+
 const API_URL = 'https://api.mercadopago.com'
 
 function accessToken() {
@@ -131,6 +133,11 @@ export async function createMercadoPagoSubscription(input: {
   amount: number
   payerEmail: string
 }) {
+  const payerEmail = resolveSubscriptionPayerEmail({
+    mode: process.env.MERCADOPAGO_MODE,
+    accountEmail: input.payerEmail,
+    testPayerEmail: process.env.MERCADOPAGO_TEST_PAYER_EMAIL,
+  })
   const configuredBaseUrl =
     process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.itgopro.cl'
   const baseUrl = configuredBaseUrl
@@ -147,7 +154,7 @@ export async function createMercadoPagoSubscription(input: {
     body: JSON.stringify({
       reason: `Plan ITGO ${input.planName}`,
       external_reference: input.subscriptionId,
-      payer_email: input.payerEmail,
+      payer_email: payerEmail,
       auto_recurring: {
         frequency: 1,
         frequency_type: 'months',

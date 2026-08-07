@@ -248,6 +248,21 @@ export async function startCompanySubscriptionAction(formData: FormData) {
           ? subscriptionError.message
           : 'unknown_error',
     })
-    redirect('/app/billing?subscription=provider_error')
+    const admin = createSupabaseAdminClient()
+    const { error: markFailedError } = await admin
+      .from('company_subscriptions')
+      .update({ status: 'failed' })
+      .eq('id', data.subscription_id)
+    if (markFailedError)
+      console.error('[mercadopago:subscription:create] mark_failed_error', {
+        subscriptionId: data.subscription_id,
+        error: markFailedError.message,
+      })
+    const errorCode =
+      subscriptionError instanceof Error &&
+      subscriptionError.message === 'MERCADOPAGO_TEST_PAYER_EMAIL_REQUIRED'
+        ? 'test_payer_required'
+        : 'provider_error'
+    redirect(`/app/billing?subscription=${errorCode}`)
   }
 }
