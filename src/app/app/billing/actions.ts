@@ -5,6 +5,7 @@ import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import {
   createCheckoutPreference,
+  createMercadoPagoSubscription,
   findMercadoPagoPayments,
 } from '@/services/mercadopago.service'
 import {
@@ -199,5 +200,54 @@ export async function reconcileMercadoPagoPaymentAction(formData: FormData) {
           : 'unknown_error',
     })
     redirect('/app/billing?payment=verification_error')
+  }
+}
+
+export async function startCompanySubscriptionAction(formData: FormData) {
+  const planId = String(formData.get('planId') ?? '')
+  if (!/^[0-9a-f-]{36}$/i.test(planId))
+    redirect('/app/billing?subscription=invalid')
+  const supabase = await createSupabaseServerClient()
+  const { data: auth } = await supabase.auth.getUser()
+  if (!auth.user?.email) redirect('/app/billing?subscription=email_required')
+  const { data, error } = await supabase
+    .rpc('initialize_company_subscription', {
+      p_plan_id: planId,
+      p_payer_email: auth.user.email,
+    })
+    .single()
+  if (error || !data) redirect('/app/billing?subscription=unavailable')
+  try {
+    const subscription = await createMercadoPagoSubscription({
+      subscriptionId: data.subscription_id,
+      planName: data.plan_name,
+      amount: Number(data.amount),
+      payerEmail: auth.user.email,
+    })
+    if (!subscription.init_point) throw new Error('checkout_url_missing')
+    const admin = createSupabaseAdminClient()
+    const { error: syncError } = await admin.rpc('sync_company_subscription', {
+      p_subscription_id: data.subscription_id,
+      p_provider_subscription_id: subscription.id,
+      p_status: subscription.status,
+      p_checkout_url: subscription.init_point,
+    })
+    if (syncError) throw syncError
+    redirect(subscription.init_point)
+  } catch (subscriptionError) {
+    if (
+      subscriptionError &&
+      typeof subscriptionError === 'object' &&
+      'digest' in subscriptionError
+    )
+      throw subscriptionError
+    console.error('[mercadopago:subscription:create] failed', {
+      subscriptionId: data.subscription_id,
+      error:
+        subscriptionError instanceof Error
+          ? subscriptionError.message
+          : 'unknown_error',
+    })
+    redirect('/app/billing?subscription=provider_error')
   }
 }

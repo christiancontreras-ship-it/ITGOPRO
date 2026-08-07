@@ -6,6 +6,7 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -14,4 +15,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - run: npm run supabase:start
       - run: npm run test:e2e
+      - name: Stop Supabase
+        if: always()
+        run: npm run supabase:stop

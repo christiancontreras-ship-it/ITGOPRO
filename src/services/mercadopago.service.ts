@@ -116,3 +116,52 @@ export async function findMercadoPagoPayments(externalReference: string) {
     }>
   }>(`/v1/payments/search?${search.toString()}`)
 }
+
+export type MercadoPagoSubscription = {
+  id: string
+  status: string
+  external_reference: string
+  init_point?: string
+  payer_email?: string
+}
+
+export async function createMercadoPagoSubscription(input: {
+  subscriptionId: string
+  planName: string
+  amount: number
+  payerEmail: string
+}) {
+  const configuredBaseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.itgopro.cl'
+  const baseUrl = configuredBaseUrl
+    .trim()
+    .replace(/^['"]|['"]$/g, '')
+    .replace(/\/+$/, '')
+  const backUrl = new URL(
+    '/api/payments/mercadopago/subscription-return',
+    baseUrl,
+  ).toString()
+  return mercadoPagoFetch<MercadoPagoSubscription>('/preapproval', {
+    method: 'POST',
+    headers: { 'X-Idempotency-Key': `subscription:${input.subscriptionId}` },
+    body: JSON.stringify({
+      reason: `Plan ITGO ${input.planName}`,
+      external_reference: input.subscriptionId,
+      payer_email: input.payerEmail,
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: 'months',
+        transaction_amount: input.amount,
+        currency_id: 'CLP',
+      },
+      back_url: backUrl,
+      status: 'pending',
+    }),
+  })
+}
+
+export async function getMercadoPagoSubscription(subscriptionId: string) {
+  return mercadoPagoFetch<MercadoPagoSubscription>(
+    `/preapproval/${encodeURIComponent(subscriptionId)}`,
+  )
+}

@@ -9,6 +9,7 @@ test('permite registrar, iniciar y cerrar una sesión local', async ({
   const password = 'ValidPassword123'
 
   await page.goto('/auth/register')
+  await page.getByRole('radio', { name: /^Empresa/ }).check()
   await page.getByLabel('Nombre').fill('E2E')
   await page.getByLabel('Apellido').fill('ITGO')
   await page.getByLabel('Correo electrónico').fill(email)
@@ -21,7 +22,9 @@ test('permite registrar, iniciar y cerrar una sesión local', async ({
   await page.getByLabel('Correo electrónico').fill(email)
   await page.getByLabel('Contraseña').fill(password)
   await page.getByRole('button', { name: 'Ingresar' }).click()
-  await expect(page).toHaveURL(/\/app\/onboarding$/, { timeout: 15_000 })
+  await expect(page).toHaveURL(/\/app\/onboarding\/company$/, {
+    timeout: 15_000,
+  })
   await page.getByLabel('Razón social').fill(`ITGO E2E ${Date.now()} SpA`)
   await page.getByLabel('Nombre de fantasía').fill('ITGO E2E')
   await page.getByRole('button', { name: 'Crear empresa' }).click()

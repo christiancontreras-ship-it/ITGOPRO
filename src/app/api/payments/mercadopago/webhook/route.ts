@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { verifyMercadoPagoWebhook } from '@/lib/security/mercadopago-webhook'
-import { getMercadoPagoPayment } from '@/services/mercadopago.service'
+import {
+  getMercadoPagoPayment,
+  getMercadoPagoSubscription,
+} from '@/services/mercadopago.service'
 
 const notificationSchema = z
   .object({
@@ -81,6 +84,44 @@ export async function POST(request: Request) {
   }
   if (event.status === 'processed' || event.status === 'ignored')
     return NextResponse.json({ received: true })
+
+  const isSubscriptionEvent =
+    parsed.data.type?.includes('subscription') ||
+    parsed.data.action?.includes('subscription') ||
+    parsed.data.action?.includes('preapproval')
+  if (isSubscriptionEvent && resourceId) {
+    try {
+      const subscription = await getMercadoPagoSubscription(resourceId)
+      if (!/^[0-9a-f-]{36}$/i.test(subscription.external_reference))
+        throw new Error('invalid_external_reference')
+      const { error } = await admin.rpc('sync_company_subscription', {
+        p_subscription_id: subscription.external_reference,
+        p_provider_subscription_id: subscription.id,
+        p_status: subscription.status,
+        p_checkout_url: subscription.init_point,
+      })
+      if (error) throw error
+      await admin
+        .from('payment_webhook_events')
+        .update({ status: 'processed', processed_at: new Date().toISOString() })
+        .eq('id', event.id)
+      return NextResponse.json({ received: true })
+    } catch (error) {
+      console.error('[mercadopago:webhook] subscription_failed', {
+        requestId,
+        error: error instanceof Error ? error.message : 'unknown_error',
+      })
+      await admin
+        .from('payment_webhook_events')
+        .update({
+          status: 'failed',
+          error_code: 'subscription_sync_failed',
+          processed_at: new Date().toISOString(),
+        })
+        .eq('id', event.id)
+      return NextResponse.json({ received: false }, { status: 500 })
+    }
+  }
 
   if (parsed.data.type !== 'payment' || !resourceId) {
     await admin

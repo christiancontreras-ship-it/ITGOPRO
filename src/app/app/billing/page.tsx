@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card'
 import {
   reconcileMercadoPagoPaymentAction,
   reconcileTransbankPaymentAction,
+  startCompanySubscriptionAction,
   startMercadoPagoCheckoutAction,
   startTransbankCheckoutAction,
 } from './actions'
@@ -14,18 +15,17 @@ import {
 export default async function BillingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ payment?: string }>
+  searchParams: Promise<{ payment?: string; subscription?: string }>
 }) {
-  const { payment } = await searchParams
+  const { payment, subscription: subscriptionResult } = await searchParams
   const context = await getCurrentAuthContext()
   const companyId = context?.memberships.find(
     (item) => item.status === 'active',
   )?.company_id
   if (!companyId) return null
-  const [{ plans, payments }, payableTickets] = await Promise.all([
-    getCompanyBilling(companyId),
-    getPayableTickets(companyId),
-  ])
+  const [{ plans, payments, subscription }, payableTickets] = await Promise.all(
+    [getCompanyBilling(companyId), getPayableTickets(companyId)],
+  )
   const paymentMessages: Record<string, string> = {
     cancelled: 'El pago fue cancelado antes de ser autorizado.',
     failed: 'Transbank rechazó o no autorizó el pago.',
@@ -46,6 +46,30 @@ export default async function BillingPage({
           {paymentMessages[payment] ??
             `El pago no fue aprobado o no pudo verificarse (${payment}).`}
         </p>
+      )}
+      {subscriptionResult === 'success' && (
+        <p className="form-message success">Plan activado correctamente.</p>
+      )}
+      {subscriptionResult && subscriptionResult !== 'success' && (
+        <p className="form-message error">
+          No fue posible activar el plan ({subscriptionResult}).
+        </p>
+      )}
+      {subscription && (
+        <Card>
+          <h2>Plan actual</h2>
+          <p>
+            <strong>{subscription.plans?.name}</strong> · {subscription.status}
+          </p>
+          {subscription.current_period_end && (
+            <p>
+              Próxima renovación:{' '}
+              {new Date(subscription.current_period_end).toLocaleDateString(
+                'es-CL',
+              )}
+            </p>
+          )}
+        </Card>
       )}
       <Card>
         <h2>Servicios pendientes de pago</h2>
@@ -134,6 +158,18 @@ export default async function BillingPage({
           <Card key={plan.id}>
             <h2>{plan.name}</h2>
             <strong>CLP {plan.price.toLocaleString('es-CL')}</strong>
+            {plan.code !== 'company_free' &&
+              subscription?.plan_id !== plan.id && (
+                <form action={startCompanySubscriptionAction}>
+                  <input type="hidden" name="planId" value={plan.id} />
+                  <button className="button" type="submit">
+                    Contratar mensualmente
+                  </button>
+                </form>
+              )}
+            {subscription?.plan_id === plan.id && (
+              <p className="form-message success">Plan seleccionado</p>
+            )}
             <p>Comisión {plan.commission_percent}%</p>
           </Card>
         ))}
