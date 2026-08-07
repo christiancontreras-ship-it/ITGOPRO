@@ -2,14 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { commitWebpayTransaction } from '@/services/transbank.service'
 
-export async function POST(request: NextRequest) {
+async function finishWebpayReturn(input: {
+  request: NextRequest
+  token: string
+  cancelled: boolean
+}) {
+  const { request, token, cancelled } = input
   const destination = new URL('/app/billing', request.url)
-  const form = await request.formData()
-  const token = String(form.get('token_ws') ?? form.get('TBK_TOKEN') ?? '')
-  if (!token) {
-    destination.searchParams.set('payment', 'cancelled')
-    return NextResponse.redirect(destination, 303)
-  }
   const admin = createSupabaseAdminClient()
   const { data: payment } = await admin
     .from('payments')
@@ -21,7 +20,7 @@ export async function POST(request: NextRequest) {
     destination.searchParams.set('payment', 'verification_error')
     return NextResponse.redirect(destination, 303)
   }
-  if (!form.get('token_ws')) {
+  if (cancelled) {
     await admin
       .from('payments')
       .update({ status: 'cancelled' })
@@ -61,8 +60,48 @@ export async function POST(request: NextRequest) {
   return NextResponse.redirect(destination, 303)
 }
 
+export async function POST(request: NextRequest) {
+  const form = await request.formData()
+  const approvedToken = String(form.get('token_ws') ?? '')
+  const token = approvedToken || String(form.get('TBK_TOKEN') ?? '')
+  if (!token)
+    return NextResponse.redirect(
+      new URL('/app/billing?payment=cancelled', request.url),
+      303,
+    )
+  return finishWebpayReturn({
+    request,
+    token,
+    cancelled: !approvedToken,
+  })
+}
+
 export async function GET(request: NextRequest) {
-  return NextResponse.redirect(
-    new URL('/app/billing?payment=cancelled', request.url),
-  )
+  const approvedToken = request.nextUrl.searchParams.get('token_ws') ?? ''
+  const cancelledToken = request.nextUrl.searchParams.get('TBK_TOKEN') ?? ''
+  let token = approvedToken || cancelledToken
+  const paymentId = request.nextUrl.searchParams.get('paymentId') ?? ''
+
+  if (!token && /^[0-9a-f-]{36}$/i.test(paymentId)) {
+    const admin = createSupabaseAdminClient()
+    const { data } = await admin
+      .from('payments')
+      .select('provider_reference')
+      .eq('id', paymentId)
+      .eq('provider', 'transbank')
+      .maybeSingle()
+    token = data?.provider_reference ?? ''
+  }
+
+  if (!token)
+    return NextResponse.redirect(
+      new URL('/app/billing?payment=cancelled', request.url),
+      303,
+    )
+
+  return finishWebpayReturn({
+    request,
+    token,
+    cancelled: Boolean(cancelledToken),
+  })
 }

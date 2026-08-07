@@ -51,15 +51,13 @@ export async function createWebpayTransaction(input: {
   amount: number
 }) {
   const buyOrder = buildTransbankBuyOrder(input.paymentId)
-  const returnUrl = new URL(
-    '/api/payments/transbank/return',
-    appBaseUrl(),
-  ).toString()
+  const returnUrl = new URL('/api/payments/transbank/return', appBaseUrl())
+  returnUrl.searchParams.set('paymentId', input.paymentId)
   const response = (await transaction().create(
     buyOrder,
     input.paymentId,
     input.amount,
-    returnUrl,
+    returnUrl.toString(),
   )) as WebpayCreateResponse
   if (!response.token || !response.url)
     throw new Error('Transbank no entregó una sesión de pago válida')
