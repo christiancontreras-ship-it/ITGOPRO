@@ -26,6 +26,12 @@ export default async function BillingPage({
     getCompanyBilling(companyId),
     getPayableTickets(companyId),
   ])
+  const paymentMessages: Record<string, string> = {
+    cancelled: 'El pago fue cancelado antes de ser autorizado.',
+    failed: 'Transbank rechazó o no autorizó el pago.',
+    transbank_verification_error:
+      'No fue posible confirmar el pago con Transbank.',
+  }
   return (
     <main className="dashboard-shell">
       <p className="eyebrow">Finanzas</p>
@@ -37,7 +43,8 @@ export default async function BillingPage({
       )}
       {payment && payment !== 'success' && (
         <p className="form-message error">
-          El pago no fue aprobado o no pudo verificarse ({payment}).
+          {paymentMessages[payment] ??
+            `El pago no fue aprobado o no pudo verificarse (${payment}).`}
         </p>
       )}
       <Card>
@@ -87,20 +94,28 @@ export default async function BillingPage({
                     item.provider === 'transbank' &&
                     ['pending', 'authorized'].includes(item.status),
                 ) ? (
-                  <form action={reconcileTransbankPaymentAction}>
-                    <input
-                      type="hidden"
-                      name="paymentId"
-                      value={
-                        ticket.payments.find(
-                          (item) => item.provider === 'transbank',
-                        )?.id
-                      }
-                    />
-                    <button className="button secondary" type="submit">
-                      Verificar Transbank
-                    </button>
-                  </form>
+                  <>
+                    <form action={startTransbankCheckoutAction}>
+                      <input type="hidden" name="ticketId" value={ticket.id} />
+                      <button className="button secondary" type="submit">
+                        Reintentar Webpay
+                      </button>
+                    </form>
+                    <form action={reconcileTransbankPaymentAction}>
+                      <input
+                        type="hidden"
+                        name="paymentId"
+                        value={
+                          ticket.payments.find(
+                            (item) => item.provider === 'transbank',
+                          )?.id
+                        }
+                      />
+                      <button className="button secondary" type="submit">
+                        Verificar Transbank
+                      </button>
+                    </form>
+                  </>
                 ) : (
                   <form action={startTransbankCheckoutAction}>
                     <input type="hidden" name="ticketId" value={ticket.id} />
