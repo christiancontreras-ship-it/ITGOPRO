@@ -258,11 +258,6 @@ export async function startCompanySubscriptionAction(formData: FormData) {
         subscriptionId: data.subscription_id,
         error: markFailedError.message,
       })
-    const errorCode =
-      subscriptionError instanceof Error &&
-      subscriptionError.message === 'MERCADOPAGO_TEST_PAYER_EMAIL_REQUIRED'
-        ? 'test_payer_required'
-        : 'provider_error'
-    redirect(`/app/billing?subscription=${errorCode}`)
+    redirect('/app/billing?subscription=provider_error')
   }
 }

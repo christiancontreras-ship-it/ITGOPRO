@@ -35,8 +35,6 @@ export default async function BillingPage({
   const subscriptionMessages: Record<string, string> = {
     cancelled: 'La activación del plan fue cancelada.',
     email_required: 'La cuenta debe tener un correo confirmado.',
-    test_payer_required:
-      'Falta configurar el comprador de prueba de Mercado Pago.',
     provider_error:
       'Mercado Pago rechazó la creación de la suscripción. Inténtalo nuevamente.',
     verification_error:

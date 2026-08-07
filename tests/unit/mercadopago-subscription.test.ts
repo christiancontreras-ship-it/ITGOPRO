@@ -12,13 +12,13 @@ describe('resolveSubscriptionPayerEmail', () => {
     ).toBe('test_payer@testuser.com')
   })
 
-  it('exige un comprador de prueba en modo test', () => {
-    expect(() =>
+  it('usa el correo sandbox oficial cuando no hay uno configurado', () => {
+    expect(
       resolveSubscriptionPayerEmail({
         mode: 'test',
         accountEmail: 'real@example.com',
       }),
-    ).toThrow('MERCADOPAGO_TEST_PAYER_EMAIL_REQUIRED')
+    ).toBe('test@testuser.com')
   })
 
   it('usa el correo de la cuenta fuera del sandbox', () => {
