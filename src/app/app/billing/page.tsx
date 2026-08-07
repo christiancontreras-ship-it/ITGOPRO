@@ -32,6 +32,14 @@ export default async function BillingPage({
     transbank_verification_error:
       'No fue posible confirmar el pago con Transbank.',
   }
+  const subscriptionMessages: Record<string, string> = {
+    cancelled: 'La activación del plan fue cancelada.',
+    email_required: 'La cuenta debe tener un correo confirmado.',
+    provider_error:
+      'Mercado Pago rechazó la creación de la suscripción. Inténtalo nuevamente.',
+    verification_error:
+      'No fue posible verificar la suscripción con Mercado Pago.',
+  }
   return (
     <main className="dashboard-shell">
       <p className="eyebrow">Finanzas</p>
@@ -52,7 +60,8 @@ export default async function BillingPage({
       )}
       {subscriptionResult && subscriptionResult !== 'success' && (
         <p className="form-message error">
-          No fue posible activar el plan ({subscriptionResult}).
+          {subscriptionMessages[subscriptionResult] ??
+            `No fue posible activar el plan (${subscriptionResult}).`}
         </p>
       )}
       {subscription && (
