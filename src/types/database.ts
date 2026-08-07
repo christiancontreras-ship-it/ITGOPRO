@@ -991,6 +991,85 @@ export type Database = {
           },
         ]
       }
+      company_subscriptions: {
+        Row: {
+          authorized_at: string | null
+          cancelled_at: string | null
+          checkout_url: string | null
+          company_id: string
+          created_at: string
+          created_by: string
+          current_period_end: string | null
+          current_period_start: string | null
+          external_reference: string
+          id: string
+          payer_email: string
+          plan_id: string
+          provider: string
+          provider_subscription_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          authorized_at?: string | null
+          cancelled_at?: string | null
+          checkout_url?: string | null
+          company_id: string
+          created_at?: string
+          created_by: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          external_reference: string
+          id?: string
+          payer_email: string
+          plan_id: string
+          provider?: string
+          provider_subscription_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          authorized_at?: string | null
+          cancelled_at?: string | null
+          checkout_url?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          external_reference?: string
+          id?: string
+          payer_email?: string
+          plan_id?: string
+          provider?: string
+          provider_subscription_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'company_subscriptions_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'company_subscriptions_created_by_fkey'
+            columns: ['created_by']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'company_subscriptions_plan_id_fkey'
+            columns: ['plan_id']
+            isOneToOne: false
+            referencedRelation: 'plans'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       company_types: {
         Row: {
           code: string
@@ -4328,6 +4407,15 @@ export type Database = {
         }
         Returns: string
       }
+      initialize_company_subscription: {
+        Args: { p_payer_email: string; p_plan_id: string }
+        Returns: {
+          amount: number
+          currency_code: string
+          plan_name: string
+          subscription_id: string
+        }[]
+      }
       initialize_mercadopago_ticket_payment: {
         Args: { p_ticket_id: string }
         Returns: { payment_id: string; amount: number; currency_code: string }[]
@@ -4393,6 +4481,15 @@ export type Database = {
       }
       close_resolved_ticket: {
         Args: { p_ticket_id: string }
+        Returns: undefined
+      }
+      sync_company_subscription: {
+        Args: {
+          p_checkout_url?: string
+          p_provider_subscription_id: string
+          p_status: string
+          p_subscription_id: string
+        }
         Returns: undefined
       }
       submit_ticket_review: {
