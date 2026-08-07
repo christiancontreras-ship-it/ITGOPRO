@@ -30,6 +30,8 @@
     "load:test": "node scripts/load-test.mjs"
   },
   "dependencies": {
+    "@emnapi/core": "1.11.3",
+    "@emnapi/runtime": "1.11.3",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.57.4",
     "clsx": "^2.1.1",
@@ -63,9 +65,5 @@
   "overrides": {
     "postcss": "^8.5.22",
     "sharp": "^0.35.3"
-  },
-  "optionalDependencies": {
-    "@emnapi/core": "1.11.3",
-    "@emnapi/runtime": "1.11.3"
   }
 }
