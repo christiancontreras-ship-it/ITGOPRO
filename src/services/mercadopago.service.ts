@@ -7,6 +7,26 @@ import {
 
 const API_URL = 'https://api.mercadopago.com'
 
+type MercadoPagoProviderCause = {
+  code?: string | number
+  description?: string
+  data?: string
+}
+
+export class MercadoPagoProviderError extends Error {
+  constructor(
+    public readonly status: number,
+    public readonly providerMessage: string,
+    public readonly requestId: string | null,
+    public readonly causes: MercadoPagoProviderCause[],
+  ) {
+    super(
+      `Mercado Pago request failed: status=${status} message=${providerMessage}`,
+    )
+    this.name = 'MercadoPagoProviderError'
+  }
+}
+
 function accessToken() {
   const value = process.env.MERCADOPAGO_ACCESS_TOKEN
   if (!value) throw new Error('MERCADOPAGO_ACCESS_TOKEN no configurado')
@@ -29,19 +49,35 @@ async function mercadoPagoFetch<T>(
   if (!response.ok) {
     const responseBody = await response.text()
     let providerMessage = 'Respuesta sin detalle'
+    let causes: MercadoPagoProviderCause[] = []
 
     try {
       const parsed = JSON.parse(responseBody) as {
         error?: string
         message?: string
+        cause?: MercadoPagoProviderCause[]
+        causes?: MercadoPagoProviderCause[]
       }
       providerMessage = parsed.message ?? parsed.error ?? providerMessage
+      causes = Array.isArray(parsed.cause)
+        ? parsed.cause
+        : Array.isArray(parsed.causes)
+          ? parsed.causes
+          : []
     } catch {
       // Avoid logging arbitrary provider HTML or response bodies.
     }
 
-    throw new Error(
-      `Mercado Pago request failed: status=${response.status} message=${providerMessage}`,
+    throw new MercadoPagoProviderError(
+      response.status,
+      providerMessage,
+      response.headers.get('x-request-id') ??
+        response.headers.get('x-correlation-id'),
+      causes.map((cause) => ({
+        code: cause.code,
+        description: cause.description,
+        data: cause.data,
+      })),
     )
   }
   return response.json() as Promise<T>

@@ -7,6 +7,7 @@ import {
   createCheckoutPreference,
   createMercadoPagoSubscription,
   findMercadoPagoPayments,
+  MercadoPagoProviderError,
 } from '@/services/mercadopago.service'
 import {
   createWebpayTransaction,
@@ -247,6 +248,15 @@ export async function startCompanySubscriptionAction(formData: FormData) {
         subscriptionError instanceof Error
           ? subscriptionError.message
           : 'unknown_error',
+      provider:
+        subscriptionError instanceof MercadoPagoProviderError
+          ? {
+              status: subscriptionError.status,
+              message: subscriptionError.providerMessage,
+              requestId: subscriptionError.requestId,
+              causes: subscriptionError.causes,
+            }
+          : undefined,
     })
     const admin = createSupabaseAdminClient()
     const { error: markFailedError } = await admin
