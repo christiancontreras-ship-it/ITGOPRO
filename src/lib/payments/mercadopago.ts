@@ -7,9 +7,3 @@ export function resolveSubscriptionPayerEmail(input: {
 
   return input.testPayerEmail?.trim().toLowerCase() || 'test@testuser.com'
 }
-
-export function buildSubscriptionIdempotencyKey(input: {
-  subscriptionId: string
-}) {
-  return input.subscriptionId
-}

@@ -1,9 +1,6 @@
 import 'server-only'
 
-import {
-  buildSubscriptionIdempotencyKey,
-  resolveSubscriptionPayerEmail,
-} from '@/lib/payments/mercadopago'
+import { resolveSubscriptionPayerEmail } from '@/lib/payments/mercadopago'
 
 const API_URL = 'https://api.mercadopago.com'
 
@@ -187,12 +184,8 @@ export async function createMercadoPagoSubscription(input: {
     '/api/payments/mercadopago/subscription-return',
     baseUrl,
   ).toString()
-  const idempotencyKey = buildSubscriptionIdempotencyKey({
-    subscriptionId: input.subscriptionId,
-  })
   return mercadoPagoFetch<MercadoPagoSubscription>('/preapproval', {
     method: 'POST',
-    headers: { 'X-Idempotency-Key': idempotencyKey },
     body: JSON.stringify({
       reason: `Plan ITGO ${input.planName}`,
       external_reference: input.subscriptionId,
