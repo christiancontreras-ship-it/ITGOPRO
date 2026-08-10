@@ -153,8 +153,6 @@ export async function createMercadoPagoSubscription(input: {
   ).toString()
   const idempotencyKey = buildSubscriptionIdempotencyKey({
     subscriptionId: input.subscriptionId,
-    payerEmail,
-    amount: input.amount,
   })
   return mercadoPagoFetch<MercadoPagoSubscription>('/preapproval', {
     method: 'POST',

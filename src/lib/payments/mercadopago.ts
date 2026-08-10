@@ -1,5 +1,3 @@
-import { createHash } from 'node:crypto'
-
 export function resolveSubscriptionPayerEmail(input: {
   mode?: string
   accountEmail: string
@@ -12,18 +10,6 @@ export function resolveSubscriptionPayerEmail(input: {
 
 export function buildSubscriptionIdempotencyKey(input: {
   subscriptionId: string
-  payerEmail: string
-  amount: number
 }) {
-  const payloadFingerprint = createHash('sha256')
-    .update(
-      JSON.stringify({
-        payerEmail: input.payerEmail.trim().toLowerCase(),
-        amount: input.amount,
-      }),
-    )
-    .digest('hex')
-    .slice(0, 16)
-
-  return `sub:${input.subscriptionId}:${payloadFingerprint}`
+  return input.subscriptionId
 }
