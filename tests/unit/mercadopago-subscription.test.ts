@@ -37,34 +37,12 @@ describe('resolveSubscriptionPayerEmail', () => {
 describe('buildSubscriptionIdempotencyKey', () => {
   const subscriptionId = '4c385787-fa6e-448c-8e0c-dfda5b150fa7'
 
-  it('mantiene la clave para reintentos con el mismo payload', () => {
-    const first = buildSubscriptionIdempotencyKey({
-      subscriptionId,
-      payerEmail: ' TEST@TESTUSER.COM ',
-      amount: 29_990,
-    })
-    const retry = buildSubscriptionIdempotencyKey({
-      subscriptionId,
-      payerEmail: 'test@testuser.com',
-      amount: 29_990,
-    })
+  it('usa el UUID v4 de la suscripción sin prefijos ni sufijos', () => {
+    const key = buildSubscriptionIdempotencyKey({ subscriptionId })
 
-    expect(retry).toBe(first)
-    expect(retry.length).toBeLessThanOrEqual(64)
-  })
-
-  it('cambia la clave cuando cambia el payload', () => {
-    const previousPayload = buildSubscriptionIdempotencyKey({
-      subscriptionId,
-      payerEmail: 'real@example.com',
-      amount: 29_990,
-    })
-    const sandboxPayload = buildSubscriptionIdempotencyKey({
-      subscriptionId,
-      payerEmail: 'test@testuser.com',
-      amount: 29_990,
-    })
-
-    expect(sandboxPayload).not.toBe(previousPayload)
+    expect(key).toBe(subscriptionId)
+    expect(key).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    )
   })
 })
