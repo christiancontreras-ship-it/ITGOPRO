@@ -1,6 +1,9 @@
 import 'server-only'
 
-import { resolveSubscriptionPayerEmail } from '@/lib/payments/mercadopago'
+import {
+  resolveSubscriptionPayerEmail,
+  resolveSubscriptionPlanId,
+} from '@/lib/payments/mercadopago'
 
 const API_URL = 'https://api.mercadopago.com'
 
@@ -174,6 +177,16 @@ export async function createMercadoPagoSubscription(input: {
     accountEmail: input.payerEmail,
     testPayerEmail: process.env.MERCADOPAGO_TEST_PAYER_EMAIL,
   })
+  const preapprovalPlanId = resolveSubscriptionPlanId({
+    planName: input.planName,
+    businessPlanId: process.env.MERCADOPAGO_BUSINESS_PLAN_ID,
+    corporatePlanId: process.env.MERCADOPAGO_CORPORATE_PLAN_ID,
+  })
+  if (!preapprovalPlanId) {
+    throw new Error(
+      `Plan de Mercado Pago no configurado para ${input.planName}`,
+    )
+  }
   const configuredBaseUrl =
     process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.itgopro.cl'
   const baseUrl = configuredBaseUrl
@@ -188,15 +201,9 @@ export async function createMercadoPagoSubscription(input: {
     method: 'POST',
     headers: { 'X-Idempotency-Key': input.subscriptionId },
     body: JSON.stringify({
-      reason: `Plan ITGO ${input.planName}`,
+      preapproval_plan_id: preapprovalPlanId,
       external_reference: input.subscriptionId,
       payer_email: payerEmail,
-      auto_recurring: {
-        frequency: 1,
-        frequency_type: 'months',
-        transaction_amount: input.amount,
-        currency_id: 'CLP',
-      },
       back_url: backUrl,
     }),
   })

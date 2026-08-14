@@ -7,3 +7,16 @@ export function resolveSubscriptionPayerEmail(input: {
 
   return input.testPayerEmail?.trim().toLowerCase() || 'test@testuser.com'
 }
+
+export function resolveSubscriptionPlanId(input: {
+  planName: string
+  businessPlanId?: string
+  corporatePlanId?: string
+}) {
+  const normalizedPlanName = input.planName.trim().toLowerCase()
+
+  if (normalizedPlanName === 'business') return input.businessPlanId?.trim()
+  if (normalizedPlanName === 'corporate') return input.corporatePlanId?.trim()
+
+  return undefined
+}

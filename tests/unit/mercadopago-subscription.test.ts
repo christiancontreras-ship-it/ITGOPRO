@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { resolveSubscriptionPayerEmail } from '@/lib/payments/mercadopago'
+import {
+  resolveSubscriptionPayerEmail,
+  resolveSubscriptionPlanId,
+} from '@/lib/payments/mercadopago'
 
 describe('resolveSubscriptionPayerEmail', () => {
   it('usa el comprador de prueba en modo test', () => {
@@ -28,5 +31,36 @@ describe('resolveSubscriptionPayerEmail', () => {
         accountEmail: ' Customer@Example.com ',
       }),
     ).toBe('customer@example.com')
+  })
+})
+
+describe('resolveSubscriptionPlanId', () => {
+  it('selecciona el plan Business configurado', () => {
+    expect(
+      resolveSubscriptionPlanId({
+        planName: ' Business ',
+        businessPlanId: ' business-plan-id ',
+        corporatePlanId: 'corporate-plan-id',
+      }),
+    ).toBe('business-plan-id')
+  })
+
+  it('selecciona el plan Corporate configurado', () => {
+    expect(
+      resolveSubscriptionPlanId({
+        planName: 'Corporate',
+        businessPlanId: 'business-plan-id',
+        corporatePlanId: ' corporate-plan-id ',
+      }),
+    ).toBe('corporate-plan-id')
+  })
+
+  it('rechaza planes sin identificador de proveedor', () => {
+    expect(
+      resolveSubscriptionPlanId({
+        planName: 'Free',
+        businessPlanId: 'business-plan-id',
+      }),
+    ).toBeUndefined()
   })
 })
