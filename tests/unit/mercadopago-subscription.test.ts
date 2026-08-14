@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  buildSubscriptionCheckoutUrl,
   resolveSubscriptionPayerEmail,
   resolveSubscriptionPlanId,
 } from '@/lib/payments/mercadopago'
@@ -31,6 +32,14 @@ describe('resolveSubscriptionPayerEmail', () => {
         accountEmail: ' Customer@Example.com ',
       }),
     ).toBe('customer@example.com')
+  })
+})
+
+describe('buildSubscriptionCheckoutUrl', () => {
+  it('construye el checkout alojado del plan', () => {
+    expect(buildSubscriptionCheckoutUrl(' plan-id ')).toBe(
+      'https://www.mercadopago.cl/subscriptions/checkout?preapproval_plan_id=plan-id',
+    )
   })
 })
 

@@ -92,10 +92,22 @@ export async function POST(request: Request) {
   if (isSubscriptionEvent && resourceId) {
     try {
       const subscription = await getMercadoPagoSubscription(resourceId)
-      if (!/^[0-9a-f-]{36}$/i.test(subscription.external_reference))
-        throw new Error('invalid_external_reference')
+      let localSubscriptionId = subscription.external_reference
+      if (
+        !localSubscriptionId ||
+        !/^[0-9a-f-]{36}$/i.test(localSubscriptionId)
+      ) {
+        const { data: existing, error: existingError } = await admin
+          .from('company_subscriptions')
+          .select('id')
+          .eq('provider_subscription_id', subscription.id)
+          .maybeSingle()
+        if (existingError || !existing)
+          throw new Error('subscription_not_mapped')
+        localSubscriptionId = existing.id
+      }
       const { error } = await admin.rpc('sync_company_subscription', {
-        p_subscription_id: subscription.external_reference,
+        p_subscription_id: localSubscriptionId,
         p_provider_subscription_id: subscription.id,
         p_status: subscription.status,
         p_checkout_url: subscription.init_point,

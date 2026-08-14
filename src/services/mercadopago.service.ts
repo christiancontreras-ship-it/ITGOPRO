@@ -1,7 +1,7 @@
 import 'server-only'
 
 import {
-  resolveSubscriptionPayerEmail,
+  buildSubscriptionCheckoutUrl,
   resolveSubscriptionPlanId,
 } from '@/lib/payments/mercadopago'
 
@@ -161,22 +161,14 @@ export async function findMercadoPagoPayments(externalReference: string) {
 export type MercadoPagoSubscription = {
   id: string
   status: string
-  external_reference: string
+  external_reference?: string | null
   init_point?: string
   payer_email?: string
 }
 
-export async function createMercadoPagoSubscription(input: {
-  subscriptionId: string
+export function createMercadoPagoSubscriptionCheckout(input: {
   planName: string
-  amount: number
-  payerEmail: string
 }) {
-  const payerEmail = resolveSubscriptionPayerEmail({
-    mode: process.env.MERCADOPAGO_MODE,
-    accountEmail: input.payerEmail,
-    testPayerEmail: process.env.MERCADOPAGO_TEST_PAYER_EMAIL,
-  })
   const preapprovalPlanId = resolveSubscriptionPlanId({
     planName: input.planName,
     businessPlanId: process.env.MERCADOPAGO_BUSINESS_PLAN_ID,
@@ -187,26 +179,8 @@ export async function createMercadoPagoSubscription(input: {
       `Plan de Mercado Pago no configurado para ${input.planName}`,
     )
   }
-  const configuredBaseUrl =
-    process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.itgopro.cl'
-  const baseUrl = configuredBaseUrl
-    .trim()
-    .replace(/^['"]|['"]$/g, '')
-    .replace(/\/+$/, '')
-  const backUrl = new URL(
-    '/api/payments/mercadopago/subscription-return',
-    baseUrl,
-  ).toString()
-  return mercadoPagoFetch<MercadoPagoSubscription>('/preapproval', {
-    method: 'POST',
-    headers: { 'X-Idempotency-Key': input.subscriptionId },
-    body: JSON.stringify({
-      preapproval_plan_id: preapprovalPlanId,
-      external_reference: input.subscriptionId,
-      payer_email: payerEmail,
-      back_url: backUrl,
-    }),
-  })
+
+  return buildSubscriptionCheckoutUrl(preapprovalPlanId)
 }
 
 export async function getMercadoPagoSubscription(subscriptionId: string) {

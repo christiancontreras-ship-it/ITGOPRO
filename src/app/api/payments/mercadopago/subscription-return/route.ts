@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdminClient } from '@/lib/supabase/admin'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { getMercadoPagoSubscription } from '@/services/mercadopago.service'
 
 export async function GET(request: NextRequest) {
@@ -13,11 +14,25 @@ export async function GET(request: NextRequest) {
   }
   try {
     const subscription = await getMercadoPagoSubscription(providerId)
-    if (!/^[0-9a-f-]{36}$/i.test(subscription.external_reference))
-      throw new Error('invalid_external_reference')
+    let localSubscriptionId = subscription.external_reference
+    if (!localSubscriptionId || !/^[0-9a-f-]{36}$/i.test(localSubscriptionId)) {
+      const supabase = await createSupabaseServerClient()
+      const { data: auth } = await supabase.auth.getUser()
+      if (!auth.user) throw new Error('authentication_required')
+      const { data: pending, error: pendingError } = await supabase
+        .from('company_subscriptions')
+        .select('id')
+        .eq('status', 'pending')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      if (pendingError || !pending)
+        throw new Error('pending_subscription_not_found')
+      localSubscriptionId = pending.id
+    }
     const admin = createSupabaseAdminClient()
     const { error } = await admin.rpc('sync_company_subscription', {
-      p_subscription_id: subscription.external_reference,
+      p_subscription_id: localSubscriptionId,
       p_provider_subscription_id: subscription.id,
       p_status: subscription.status,
       p_checkout_url: subscription.init_point,

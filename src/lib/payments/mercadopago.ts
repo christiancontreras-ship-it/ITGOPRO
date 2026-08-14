@@ -20,3 +20,9 @@ export function resolveSubscriptionPlanId(input: {
 
   return undefined
 }
+
+export function buildSubscriptionCheckoutUrl(preapprovalPlanId: string) {
+  const url = new URL('https://www.mercadopago.cl/subscriptions/checkout')
+  url.searchParams.set('preapproval_plan_id', preapprovalPlanId.trim())
+  return url.toString()
+}

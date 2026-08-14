@@ -5,7 +5,7 @@ import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import {
   createCheckoutPreference,
-  createMercadoPagoSubscription,
+  createMercadoPagoSubscriptionCheckout,
   findMercadoPagoPayments,
   MercadoPagoProviderError,
 } from '@/services/mercadopago.service'
@@ -219,22 +219,16 @@ export async function startCompanySubscriptionAction(formData: FormData) {
     .single()
   if (error || !data) redirect('/app/billing?subscription=unavailable')
   try {
-    const subscription = await createMercadoPagoSubscription({
-      subscriptionId: data.subscription_id,
+    const checkoutUrl = createMercadoPagoSubscriptionCheckout({
       planName: data.plan_name,
-      amount: Number(data.amount),
-      payerEmail: auth.user.email,
     })
-    if (!subscription.init_point) throw new Error('checkout_url_missing')
     const admin = createSupabaseAdminClient()
-    const { error: syncError } = await admin.rpc('sync_company_subscription', {
-      p_subscription_id: data.subscription_id,
-      p_provider_subscription_id: subscription.id,
-      p_status: subscription.status,
-      p_checkout_url: subscription.init_point,
-    })
-    if (syncError) throw syncError
-    redirect(subscription.init_point)
+    const { error: updateError } = await admin
+      .from('company_subscriptions')
+      .update({ checkout_url: checkoutUrl, status: 'pending' })
+      .eq('id', data.subscription_id)
+    if (updateError) throw updateError
+    redirect(checkoutUrl)
   } catch (subscriptionError) {
     if (
       subscriptionError &&
