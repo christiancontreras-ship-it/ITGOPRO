@@ -186,6 +186,7 @@ export async function createMercadoPagoSubscription(input: {
   ).toString()
   return mercadoPagoFetch<MercadoPagoSubscription>('/preapproval', {
     method: 'POST',
+    headers: { 'X-Idempotency-Key': input.subscriptionId },
     body: JSON.stringify({
       reason: `Plan ITGO ${input.planName}`,
       external_reference: input.subscriptionId,
@@ -197,7 +198,6 @@ export async function createMercadoPagoSubscription(input: {
         currency_id: 'CLP',
       },
       back_url: backUrl,
-      status: 'pending',
     }),
   })
 }
