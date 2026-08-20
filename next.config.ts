@@ -2,11 +2,11 @@ import type { NextConfig } from 'next'
 
 const scriptSources =
   process.env.NODE_ENV === 'development'
-    ? "'self' 'unsafe-inline' 'unsafe-eval' https://sdk.mercadopago.com"
-    : "'self' 'unsafe-inline' https://sdk.mercadopago.com"
+    ? "'self' 'unsafe-inline' 'unsafe-eval' https://sdk.mercadopago.com https://*.mlstatic.com"
+    : "'self' 'unsafe-inline' https://sdk.mercadopago.com https://*.mlstatic.com"
 
 const mercadoPagoSources =
-  'https://api.mercadopago.com https://*.mercadopago.com https://*.mercadopago.cl https://*.mlstatic.com'
+  'https://api.mercadopago.com https://api.mercadolibre.com https://*.mercadopago.com https://*.mercadopago.cl https://*.mlstatic.com'
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: `default-src 'self'; script-src ${scriptSources}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.mercadopago.com https://*.mercadopago.cl https://*.mlstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com ${mercadoPagoSources}; frame-src https://*.mercadopago.com https://*.mercadopago.cl https://*.mlstatic.com; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`,
+            value: `default-src 'self'; script-src ${scriptSources}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.mercadopago.com https://*.mercadopago.cl https://*.mlstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com ${mercadoPagoSources}; frame-src 'self' https://sdk.mercadopago.com https://*.mercadopago.com https://*.mercadopago.cl https://*.mlstatic.com; worker-src 'self' blob:; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`,
           },
           {
             key: 'Strict-Transport-Security',

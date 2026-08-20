@@ -409,6 +409,7 @@ a {
 .subscription-card-form input,
 .subscription-card-form select,
 .mp-secure-field {
+  display: block;
   min-height: 2.8rem;
   width: 100%;
   border: 1px solid var(--border);
@@ -418,8 +419,11 @@ a {
   color: var(--foreground);
 }
 .mp-secure-field iframe {
+  display: block;
   min-height: 1.3rem;
+  height: 1.3rem;
   width: 100%;
+  border: 0;
 }
 .subscription-card-form small {
   color: var(--muted);
