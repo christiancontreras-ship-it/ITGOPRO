@@ -66,10 +66,10 @@ begin
       returning * into v_subscription;
   end if;
 
-  select * into v_payment from public.payments
-  where subscription_id=v_subscription.id and provider='transbank'
-    and status in ('pending','authorized')
-  order by created_at desc limit 1 for update;
+  select p.* into v_payment from public.payments as p
+  where p.subscription_id=v_subscription.id and p.provider='transbank'
+    and p.status in ('pending','authorized')
+  order by p.created_at desc limit 1 for update;
 
   if not found then
     insert into public.payments(
