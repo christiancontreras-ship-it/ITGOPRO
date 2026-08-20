@@ -5,9 +5,7 @@ import { createSupabaseAdminClient } from '@/lib/supabase/admin'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import {
   createCheckoutPreference,
-  createMercadoPagoSubscriptionCheckout,
   findMercadoPagoPayments,
-  MercadoPagoProviderError,
 } from '@/services/mercadopago.service'
 import {
   createWebpayTransaction,
@@ -209,26 +207,27 @@ export async function startCompanySubscriptionAction(formData: FormData) {
   if (!/^[0-9a-f-]{36}$/i.test(planId))
     redirect('/app/billing?subscription=invalid')
   const supabase = await createSupabaseServerClient()
-  const { data: auth } = await supabase.auth.getUser()
-  if (!auth.user?.email) redirect('/app/billing?subscription=email_required')
   const { data, error } = await supabase
-    .rpc('initialize_company_subscription', {
-      p_plan_id: planId,
-      p_payer_email: auth.user.email,
-    })
+    .rpc('initialize_transbank_subscription_payment', { p_plan_id: planId })
     .single()
   if (error || !data) redirect('/app/billing?subscription=unavailable')
   try {
-    const checkoutUrl = createMercadoPagoSubscriptionCheckout({
-      planName: data.plan_name,
+    const session = await createWebpayTransaction({
+      paymentId: data.payment_id,
+      amount: Number(data.amount),
     })
     const admin = createSupabaseAdminClient()
     const { error: updateError } = await admin
-      .from('company_subscriptions')
-      .update({ checkout_url: checkoutUrl, status: 'pending' })
-      .eq('id', data.subscription_id)
+      .from('payments')
+      .update({
+        provider_reference: session.token,
+        provider_buy_order: session.buyOrder,
+        provider_redirect_url: session.url,
+      })
+      .eq('id', data.payment_id)
+      .eq('provider', 'transbank')
     if (updateError) throw updateError
-    redirect(checkoutUrl)
+    redirect(`/api/payments/transbank/redirect?paymentId=${data.payment_id}`)
   } catch (subscriptionError) {
     if (
       subscriptionError &&
@@ -236,21 +235,13 @@ export async function startCompanySubscriptionAction(formData: FormData) {
       'digest' in subscriptionError
     )
       throw subscriptionError
-    console.error('[mercadopago:subscription:create] failed', {
+    console.error('[transbank:subscription:create] failed', {
       subscriptionId: data.subscription_id,
+      paymentId: data.payment_id,
       error:
         subscriptionError instanceof Error
           ? subscriptionError.message
           : 'unknown_error',
-      provider:
-        subscriptionError instanceof MercadoPagoProviderError
-          ? {
-              status: subscriptionError.status,
-              message: subscriptionError.providerMessage,
-              requestId: subscriptionError.requestId,
-              causes: subscriptionError.causes,
-            }
-          : undefined,
     })
     const admin = createSupabaseAdminClient()
     const { error: markFailedError } = await admin
@@ -258,10 +249,10 @@ export async function startCompanySubscriptionAction(formData: FormData) {
       .update({ status: 'failed' })
       .eq('id', data.subscription_id)
     if (markFailedError)
-      console.error('[mercadopago:subscription:create] mark_failed_error', {
+      console.error('[transbank:subscription:create] mark_failed_error', {
         subscriptionId: data.subscription_id,
         error: markFailedError.message,
       })
-    redirect('/app/billing?subscription=provider_error')
+    redirect('/app/billing?subscription=transbank_provider_error')
   }
 }

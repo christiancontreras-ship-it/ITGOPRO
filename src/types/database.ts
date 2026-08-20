@@ -1765,6 +1765,7 @@ export type Database = {
           resolved_at: string | null
           severity: string
           status: string
+          subscription_id: string | null
           ticket_id: string | null
           title: string
           updated_at: string
@@ -1780,6 +1781,7 @@ export type Database = {
           resolved_at?: string | null
           severity: string
           status?: string
+          subscription_id?: string | null
           ticket_id?: string | null
           title: string
           updated_at?: string
@@ -1795,6 +1797,7 @@ export type Database = {
           resolved_at?: string | null
           severity?: string
           status?: string
+          subscription_id?: string | null
           ticket_id?: string | null
           title?: string
           updated_at?: string
@@ -2150,6 +2153,7 @@ export type Database = {
           provider_redirect_url: string | null
           provider_reference: string | null
           status: string
+          subscription_id: string | null
           ticket_id: string | null
           updated_at: string
         }
@@ -2168,6 +2172,7 @@ export type Database = {
           provider_redirect_url?: string | null
           provider_reference?: string | null
           status?: string
+          subscription_id?: string | null
           ticket_id?: string | null
           updated_at?: string
         }
@@ -2186,6 +2191,7 @@ export type Database = {
           provider_redirect_url?: string | null
           provider_reference?: string | null
           status?: string
+          subscription_id?: string | null
           ticket_id?: string | null
           updated_at?: string
         }
@@ -2210,6 +2216,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: 'currencies'
             referencedColumns: ['code']
+          },
+          {
+            foreignKeyName: 'payments_subscription_id_fkey'
+            columns: ['subscription_id']
+            isOneToOne: false
+            referencedRelation: 'company_subscriptions'
+            referencedColumns: ['id']
           },
           {
             foreignKeyName: 'payments_ticket_id_fkey'
@@ -4423,6 +4436,26 @@ export type Database = {
       initialize_transbank_ticket_payment: {
         Args: { p_ticket_id: string }
         Returns: { payment_id: string; amount: number; currency_code: string }[]
+      }
+      initialize_transbank_subscription_payment: {
+        Args: { p_plan_id: string }
+        Returns: {
+          payment_id: string
+          subscription_id: string
+          amount: number
+          currency_code: string
+        }[]
+      }
+      finalize_transbank_subscription_payment: {
+        Args: {
+          p_amount: number
+          p_buy_order: string
+          p_payment_id: string
+          p_provider_reference: string
+          p_provider_status: string
+          p_response_code: number
+        }
+        Returns: undefined
       }
       finalize_transbank_ticket_payment: {
         Args: {

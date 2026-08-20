@@ -2,11 +2,10 @@ import { Card } from '@/components/ui/card'
 import {
   reconcileMercadoPagoPaymentAction,
   reconcileTransbankPaymentAction,
+  startCompanySubscriptionAction,
   startMercadoPagoCheckoutAction,
   startTransbankCheckoutAction,
 } from './actions'
-import { MercadoPagoSubscriptionForm } from '@/components/billing/mercadopago-subscription-form'
-import { getPublicEnv } from '@/config/env'
 import { getCurrentAuthContext } from '@/services/auth.service'
 import {
   getCompanyBilling,
@@ -20,7 +19,6 @@ export default async function BillingPage({
 }) {
   const { payment, subscription: subscriptionResult } = await searchParams
   const context = await getCurrentAuthContext()
-  const publicEnv = getPublicEnv()
   const companyId = context?.memberships.find(
     (item) => item.status === 'active',
   )?.company_id
@@ -37,10 +35,10 @@ export default async function BillingPage({
   const subscriptionMessages: Record<string, string> = {
     cancelled: 'La activación del plan fue cancelada.',
     email_required: 'La cuenta debe tener un correo confirmado.',
-    provider_error:
-      'Mercado Pago rechazó la creación de la suscripción. Inténtalo nuevamente.',
-    verification_error:
-      'No fue posible verificar la suscripción con Mercado Pago.',
+    transbank_provider_error:
+      'Transbank no pudo iniciar el pago mensual. Inténtalo nuevamente.',
+    transbank_verification_error:
+      'No fue posible confirmar la activación del plan con Transbank.',
   }
   return (
     <main className="dashboard-shell">
@@ -172,13 +170,17 @@ export default async function BillingPage({
             {plan.code !== 'company_free' &&
               (subscription?.plan_id !== plan.id ||
                 subscription.status === 'pending') && (
-                <MercadoPagoSubscriptionForm
-                  planId={plan.id}
-                  planName={plan.name}
-                  amount={plan.price}
-                  publicKey={publicEnv.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY}
-                  retry={subscription?.plan_id === plan.id}
-                />
+                <form action={startCompanySubscriptionAction}>
+                  <input type="hidden" name="planId" value={plan.id} />
+                  <button className="button" type="submit">
+                    {subscription?.plan_id === plan.id
+                      ? 'Renovar con Webpay'
+                      : 'Contratar con Webpay'}
+                  </button>
+                  <small>
+                    Vigencia mensual. La renovación requiere un nuevo pago.
+                  </small>
+                </form>
               )}
             {subscription?.plan_id === plan.id &&
               subscription.status === 'authorized' && (

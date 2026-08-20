@@ -12,7 +12,7 @@ async function finishWebpayReturn(input: {
   const admin = createSupabaseAdminClient()
   const { data: payment } = await admin
     .from('payments')
-    .select('id,status,provider_buy_order')
+    .select('id,status,provider_buy_order,subscription_id')
     .eq('provider', 'transbank')
     .eq('provider_reference', token)
     .maybeSingle()
@@ -25,16 +25,25 @@ async function finishWebpayReturn(input: {
       .from('payments')
       .update({ status: 'cancelled' })
       .eq('id', payment.id)
-    destination.searchParams.set('payment', 'cancelled')
+    destination.searchParams.set(
+      payment.subscription_id ? 'subscription' : 'payment',
+      'cancelled',
+    )
     return NextResponse.redirect(destination, 303)
   }
   if (payment.status === 'captured') {
-    destination.searchParams.set('payment', 'success')
+    destination.searchParams.set(
+      payment.subscription_id ? 'subscription' : 'payment',
+      'success',
+    )
     return NextResponse.redirect(destination, 303)
   }
   try {
     const result = await commitWebpayTransaction(token)
-    const { error } = await admin.rpc('finalize_transbank_ticket_payment', {
+    const rpcName = payment.subscription_id
+      ? 'finalize_transbank_subscription_payment'
+      : 'finalize_transbank_ticket_payment'
+    const { error } = await admin.rpc(rpcName, {
       p_payment_id: payment.id,
       p_provider_reference: token,
       p_buy_order: result.buy_order,
@@ -43,11 +52,10 @@ async function finishWebpayReturn(input: {
       p_response_code: result.response_code,
     })
     if (error) throw error
+    const success = result.status === 'AUTHORIZED' && result.response_code === 0
     destination.searchParams.set(
-      'payment',
-      result.status === 'AUTHORIZED' && result.response_code === 0
-        ? 'success'
-        : 'failed',
+      payment.subscription_id ? 'subscription' : 'payment',
+      success ? 'success' : 'failed',
     )
   } catch (commitError) {
     console.error('[transbank:return] verification failed', {
@@ -55,7 +63,10 @@ async function finishWebpayReturn(input: {
       error:
         commitError instanceof Error ? commitError.message : 'unknown_error',
     })
-    destination.searchParams.set('payment', 'transbank_verification_error')
+    destination.searchParams.set(
+      payment.subscription_id ? 'subscription' : 'payment',
+      'transbank_verification_error',
+    )
   }
   return NextResponse.redirect(destination, 303)
 }
