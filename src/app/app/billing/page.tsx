@@ -2,10 +2,11 @@ import { Card } from '@/components/ui/card'
 import {
   reconcileMercadoPagoPaymentAction,
   reconcileTransbankPaymentAction,
-  startCompanySubscriptionAction,
   startMercadoPagoCheckoutAction,
   startTransbankCheckoutAction,
 } from './actions'
+import { MercadoPagoSubscriptionForm } from '@/components/billing/mercadopago-subscription-form'
+import { getPublicEnv } from '@/config/env'
 import { getCurrentAuthContext } from '@/services/auth.service'
 import {
   getCompanyBilling,
@@ -19,6 +20,7 @@ export default async function BillingPage({
 }) {
   const { payment, subscription: subscriptionResult } = await searchParams
   const context = await getCurrentAuthContext()
+  const publicEnv = getPublicEnv()
   const companyId = context?.memberships.find(
     (item) => item.status === 'active',
   )?.company_id
@@ -170,14 +172,13 @@ export default async function BillingPage({
             {plan.code !== 'company_free' &&
               (subscription?.plan_id !== plan.id ||
                 subscription.status === 'pending') && (
-                <form action={startCompanySubscriptionAction}>
-                  <input type="hidden" name="planId" value={plan.id} />
-                  <button className="button" type="submit">
-                    {subscription?.plan_id === plan.id
-                      ? 'Reintentar activación'
-                      : 'Contratar mensualmente'}
-                  </button>
-                </form>
+                <MercadoPagoSubscriptionForm
+                  planId={plan.id}
+                  planName={plan.name}
+                  amount={plan.price}
+                  publicKey={publicEnv.NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY}
+                  retry={subscription?.plan_id === plan.id}
+                />
               )}
             {subscription?.plan_id === plan.id &&
               subscription.status === 'authorized' && (

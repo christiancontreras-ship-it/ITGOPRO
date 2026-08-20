@@ -166,6 +166,49 @@ export type MercadoPagoSubscription = {
   payer_email?: string
 }
 
+export async function createMercadoPagoSubscription(input: {
+  subscriptionId: string
+  planName: string
+  payerEmail: string
+  cardTokenId: string
+}) {
+  const preapprovalPlanId = resolveSubscriptionPlanId({
+    planName: input.planName,
+    businessPlanId: process.env.MERCADOPAGO_BUSINESS_PLAN_ID,
+    corporatePlanId: process.env.MERCADOPAGO_CORPORATE_PLAN_ID,
+  })
+  if (!preapprovalPlanId) {
+    throw new Error(
+      `Plan de Mercado Pago no configurado para ${input.planName}`,
+    )
+  }
+
+  const configuredBaseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.itgopro.cl'
+  const baseUrl = configuredBaseUrl
+    .trim()
+    .replace(/^["']|["']$/g, '')
+    .replace(/\/+$/, '')
+  const backUrl = new URL(
+    '/app/billing',
+    /^https?:\/\//i.test(baseUrl) ? baseUrl : 'https://www.itgopro.cl',
+  ).toString()
+
+  return mercadoPagoFetch<MercadoPagoSubscription>('/preapproval', {
+    method: 'POST',
+    headers: { 'X-Idempotency-Key': input.subscriptionId },
+    body: JSON.stringify({
+      preapproval_plan_id: preapprovalPlanId,
+      reason: `ITGO ${input.planName}`,
+      external_reference: input.subscriptionId,
+      payer_email: input.payerEmail,
+      card_token_id: input.cardTokenId,
+      back_url: backUrl,
+      status: 'authorized',
+    }),
+  })
+}
+
 export function createMercadoPagoSubscriptionCheckout(input: {
   planName: string
 }) {

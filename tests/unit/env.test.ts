@@ -8,6 +8,7 @@ const valid = {
   NEXT_PUBLIC_APP_URL: 'http://localhost:3000',
   NEXT_PUBLIC_SUPABASE_URL: 'http://127.0.0.1:54321',
   NEXT_PUBLIC_SUPABASE_ANON_KEY: 'anon',
+  NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY: 'TEST-public-key',
 }
 
 describe('environment validation', () => {
