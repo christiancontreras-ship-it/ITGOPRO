@@ -1070,6 +1070,51 @@ export type Database = {
           },
         ]
       }
+      subscription_renewal_events: {
+        Row: {
+          company_id: string
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          period_end: string
+          subscription_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          period_end: string
+          subscription_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          period_end?: string
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'subscription_renewal_events_company_id_fkey'
+            columns: ['company_id']
+            isOneToOne: false
+            referencedRelation: 'companies'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'subscription_renewal_events_subscription_id_fkey'
+            columns: ['subscription_id']
+            isOneToOne: false
+            referencedRelation: 'company_subscriptions'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       company_types: {
         Row: {
           code: string
@@ -2154,6 +2199,8 @@ export type Database = {
           provider_reference: string | null
           status: string
           subscription_id: string | null
+          subscription_period_end: string | null
+          subscription_period_start: string | null
           ticket_id: string | null
           updated_at: string
         }
@@ -2173,6 +2220,8 @@ export type Database = {
           provider_reference?: string | null
           status?: string
           subscription_id?: string | null
+          subscription_period_end?: string | null
+          subscription_period_start?: string | null
           ticket_id?: string | null
           updated_at?: string
         }
@@ -2192,6 +2241,8 @@ export type Database = {
           provider_reference?: string | null
           status?: string
           subscription_id?: string | null
+          subscription_period_end?: string | null
+          subscription_period_start?: string | null
           ticket_id?: string | null
           updated_at?: string
         }
@@ -4445,6 +4496,10 @@ export type Database = {
           amount: number
           currency_code: string
         }[]
+      }
+      process_subscription_renewals: {
+        Args: { p_now?: string }
+        Returns: Json
       }
       finalize_transbank_subscription_payment: {
         Args: {

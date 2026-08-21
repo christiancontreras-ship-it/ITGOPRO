@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card'
+import Link from 'next/link'
 import {
   reconcileMercadoPagoPaymentAction,
   reconcileTransbankPaymentAction,
@@ -23,8 +24,13 @@ export default async function BillingPage({
     (item) => item.status === 'active',
   )?.company_id
   if (!companyId) return null
-  const [{ plans, payments, subscription }, payableTickets] = await Promise.all(
-    [getCompanyBilling(companyId), getPayableTickets(companyId)],
+  const [{ plans, payments, subscription, renewalEvents }, payableTickets] =
+    await Promise.all([
+      getCompanyBilling(companyId),
+      getPayableTickets(companyId),
+    ])
+  const latestReminder = renewalEvents.find((event) =>
+    ['reminder_7d', 'reminder_3d', 'reminder_1d'].includes(event.event_type),
   )
   const paymentMessages: Record<string, string> = {
     cancelled: 'El pago fue cancelado antes de ser autorizado.',
@@ -62,6 +68,19 @@ export default async function BillingPage({
         <p className="form-message error">
           {subscriptionMessages[subscriptionResult] ??
             `No fue posible activar el plan (${subscriptionResult}).`}
+        </p>
+      )}
+      {latestReminder && subscription?.status === 'authorized' && (
+        <p className="form-message">
+          Tu plan vence el{' '}
+          {new Date(latestReminder.period_end).toLocaleDateString('es-CL')}.
+          Renuévalo con Webpay para mantener sus beneficios.
+        </p>
+      )}
+      {subscription?.status === 'expired' && (
+        <p className="form-message error">
+          El plan venció y la empresa volvió temporalmente a Free. Puedes
+          renovarlo con Webpay en esta misma página.
         </p>
       )}
       {subscription && (
@@ -195,16 +214,43 @@ export default async function BillingPage({
         ))}
       </section>
       <Card>
-        <h2>Historial</h2>
-        {payments.length === 0 ? (
-          <p>No hay pagos registrados.</p>
+        <h2>Historial de pagos y renovaciones</h2>
+        {payments.length === 0 && renewalEvents.length === 0 ? (
+          <p>No hay movimientos registrados.</p>
         ) : (
-          payments.map((payment) => (
-            <p key={payment.id}>
-              {payment.tickets?.code} · {payment.status} ·{' '}
-              {payment.currency_code} {payment.amount.toLocaleString('es-CL')}
-            </p>
-          ))
+          <>
+            {payments.map((payment) => (
+              <div key={payment.id} className="dashboard-heading">
+                <p>
+                  {payment.tickets?.code ??
+                    payment.company_subscriptions?.plans?.name ??
+                    'Pago'}{' '}
+                  · {payment.status} · {payment.currency_code}{' '}
+                  {payment.amount.toLocaleString('es-CL')} ·{' '}
+                  {new Date(
+                    payment.captured_at ?? payment.created_at,
+                  ).toLocaleDateString('es-CL')}
+                </p>
+                {payment.subscription_id && payment.status === 'captured' && (
+                  <Link
+                    className="button secondary"
+                    href={`/app/billing/receipts/${payment.id}`}
+                  >
+                    Ver comprobante
+                  </Link>
+                )}
+              </div>
+            ))}
+            {renewalEvents
+              .filter((event) => event.event_type === 'expired')
+              .map((event) => (
+                <p key={event.id}>
+                  Plan vencido ·{' '}
+                  {new Date(event.period_end).toLocaleDateString('es-CL')} ·
+                  retorno a Free
+                </p>
+              ))}
+          </>
         )}
       </Card>
     </main>
